@@ -9,44 +9,25 @@ public class Item_CoinTemplate : Item_Base
     [Header("Template details")]
     [SerializeField] private float coolingDuration = 1.5f;
     [SerializeField] private ItemDataSO coinPrefab;
-    //[SerializeField] private bool isHotByDefault;
+
 
     [Header("Temper details")]
-    //[SerializeField] private bool hasTemperPointsByDefault;
     [SerializeField] private int minTemperAmount = 0;
     [SerializeField] private int maxTemperAmount = 5;
     [SerializeField] private GameObject temperPointPrefab;
     [SerializeField] private float temperPointOffsetY = .01f;
     [SerializeField] private List<CoinTemplate_TemperPoint> temperPoints = new List<CoinTemplate_TemperPoint>();
     private BoxCollider spawnArea;
-    [SerializeField] private ParticleSystem onTemperHitVfx;
-    [SerializeField] private float vfxOffsetY = .01f;
-
+    
     [Header("Recycle Details")]
-    //public bool noSlotsByDefault;
     [SerializeField] private int refineValue;
-
 
 
     protected override void Awake()
     {
         base.Awake();
-        SetupSlots();
+        InitializeCoins();
     }
-
-    //protected override void Start()
-    //{
-    //    base.Start();
-
-    //    if (hasTemperPointsByDefault)
-    //        CreateTemperPoints();
-
-    //    if (isHotByDefault)
-    //        EnableHot(true);
-
-    //    if (noSlotsByDefault)
-    //        MakePlateEmpty(true);
-    //}
 
     public override void ShowInputUI(bool enable)
     {
@@ -86,7 +67,7 @@ public class Item_CoinTemplate : Item_Base
 
                     if (GetValue() < 10 && EmptyPlate())
                     {
-                        if(combiner.CanCombineTemplates(transform))
+                        if (combiner.CanCombineTemplates(transform))
                             inputHelp.AddInput(KeyType.LMB, "input_help_template_can_combine");
                         else
                             inputHelp.AddInput(KeyType.LMB, "input_help_template_cannot_combine_need_more");
@@ -108,12 +89,6 @@ public class Item_CoinTemplate : Item_Base
         else
             inputHelp.RemoveInput();
 
-    }
-
-    public override void Highlight(bool enable)
-    {
-        base.Highlight(enable);
-        ShowInputUI(enable);
     }
 
     public void MakePlateEmpty(bool makePlateEmpty)
@@ -189,7 +164,7 @@ public class Item_CoinTemplate : Item_Base
             point.EnableCamPriority(enable);
     }
 
-    public void CreateTemperPoints()
+    public void InitializeTemperPoints()
     {
         spawnArea = GetCollider() as BoxCollider;
 
@@ -203,10 +178,10 @@ public class Item_CoinTemplate : Item_Base
     }
 
 
-    private void SetupSlots()
+    private void InitializeCoins()
     {
         coinSlots = GetComponentsInChildren<CoinTemplate_Slot>(true);
-        refineValue = coinSlots.Length;
+
         foreach (var placeholder in coinSlots)
         {
             placeholder.SetupPlaceHolder(meshRenderer.material);
@@ -218,14 +193,12 @@ public class Item_CoinTemplate : Item_Base
     {
         if (enableHot)
         {
-            SetCanPickUpTo(false);
             heatHandler.TransitionToHot(.1f);
+            return;
         }
-        else
-        {
-            SetCanPickUpTo(true);
-            heatHandler.TransitionToCool(coolingDuration);
-        }
+
+
+        heatHandler.TransitionToCool(coolingDuration);
     }
 
 
@@ -322,12 +295,5 @@ public class Item_CoinTemplate : Item_Base
         Debug.LogWarning("Could not find non-overlapping position for temper point.");
         return null;
     }
-    //public override void EnableInteraction(bool enable, float delay = 0)
-    //{
-    //    base.EnableInteraction(enable);
-
-    //    foreach (var point in temperPoints)
-    //        point.gameObject.layer = LayerMask.NameToLayer("Hoverable");
-    //}
 
 }

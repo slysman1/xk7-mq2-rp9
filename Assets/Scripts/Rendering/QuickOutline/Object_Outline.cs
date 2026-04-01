@@ -71,9 +71,6 @@ public class Object_Outline : MonoBehaviour
     [SerializeField, Range(0f, 10f)]
     private float outlineWidth = 10f;
 
-    private Color highlightColor;
-    private Color warningColor;
-
 
     [Header("Optional")]
 
@@ -118,9 +115,9 @@ public class Object_Outline : MonoBehaviour
 
     private void Start()
     {
-        highlightColor = ColorManager.instance.highlightColor;
-        warningColor = ColorManager.instance.warningColor;
-        outlineWidth = ColorManager.instance.outlineWith;
+
+        outlineColor = ColorConfig.Get().outlineColor;
+        outlineWidth = ColorConfig.Get().outlineWidth;
 
     }
 
@@ -181,10 +178,7 @@ public class Object_Outline : MonoBehaviour
         switch (type)
         {
             case OutlineType.Highlight:
-                return highlightColor;
-
-            case OutlineType.Warning:
-                return warningColor;
+                return outlineColor;
 
             default:
                 return Color.clear; // or any fallback color
@@ -249,11 +243,6 @@ public class Object_Outline : MonoBehaviour
         }
     }
 
-    public void SetColors(Color highlight, Color interaction)
-    {
-        highlightColor = highlight;
-        warningColor = interaction;
-    }
 
     void Bake()
     {

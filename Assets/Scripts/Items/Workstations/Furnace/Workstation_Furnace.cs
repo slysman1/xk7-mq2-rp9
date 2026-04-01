@@ -94,8 +94,7 @@ public class Workstation_Furnace : Workstation
 
         Item_MetalBar ingridientToUse = metalBarHolder.GetMetalBar();
 
-        ingridientToUse.heatHandler.TransitionToHot(.5f);
-        ingridientToUse.SetCanPickUpTo(false);
+        ingridientToUse.EnableHot(true);
         ingridientToUse.EnableKinematic(true);
 
 

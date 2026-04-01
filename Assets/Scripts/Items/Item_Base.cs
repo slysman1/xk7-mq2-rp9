@@ -17,7 +17,7 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
     public event Action OnItemDroppedEvent;
 
     public Object_Outline outline { get; private set; }
-    public HeatHandler heatHandler { get; private set; }
+    public HeatEmission heatHandler { get; private set; }
     public Rigidbody rb { get; private set; }
     protected Collider[] colliders;
     private Dictionary<MeshCollider, bool> meshConvexStates = new Dictionary<MeshCollider, bool>();
@@ -69,7 +69,7 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
         mesh = GetComponentInChildren<MeshFilter>(true).mesh;
         meshRenderer = GetComponentInChildren<MeshRenderer>();
         meshFilter = GetComponentInChildren<MeshFilter>();
-        heatHandler = GetComponent<HeatHandler>();
+        heatHandler = GetComponent<HeatEmission>();
 
         CacheOriginalLayers();
         CacheMeshConvexState();
@@ -216,6 +216,8 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
     public virtual void Highlight(bool enable)
     {
 
+        ShowInputUI(enable);
+
         if (outline == null)
             return;
 
@@ -230,7 +232,6 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
             OnItemHighlighted?.Invoke();
 
         outline.EnableOutline(enable ? OutlineType.Highlight : OutlineType.None);
-        ShowInputUI(enable);
     }
 
     protected virtual void OnCollisionEnter(Collision collision)

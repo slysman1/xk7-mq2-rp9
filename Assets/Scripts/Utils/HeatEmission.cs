@@ -2,25 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HeatHandler : MonoBehaviour
+public class HeatEmission : MonoBehaviour
 {
+    private Color emissionBaseColor;
 
-
-    private Color emissionBaseColor => ColorManager.instance.hotEmissionColor;
-
-    private float hotIntensity => ColorManager.instance.hotEmissionIntensity;
+    private float hotIntensity;
     private float coldIntensit = 0.01f;
 
     private Material[] materialInstances;
-    private Item_Base item;
     public Coroutine changeTempretureCo;
     public bool isHot { get; private set; }
-    public bool hotAtStart;
 
     private void Awake()
     {
-        item = GetComponentInParent<Item_Base>();
         var renderers = GetComponentsInChildren<MeshRenderer>();
+        emissionBaseColor = ColorConfig.Get().hotEmissionColor;
+        hotIntensity = ColorConfig.Get().hotEmissionIntensity;
+        coldIntensit = ColorConfig.Get().coldEmissionIntensity;
 
         List<Material> mats = new List<Material>();
 
@@ -35,20 +33,8 @@ public class HeatHandler : MonoBehaviour
 
     }
 
-    private void Start()
-    {
-        if (hotAtStart)
-            TransitionToHot(.1f);
-    }
-
-    [ContextMenu("Make Hot")]
-    public void MakeHot()
-    {
-        TransitionToHot(.1f);
-    }
     public void TransitionToHot(float duration)
     {
-        item.SetCanPickUpTo(false);
         StartEmissionRoutine(hotIntensity, duration);
     }
 
@@ -83,7 +69,7 @@ public class HeatHandler : MonoBehaviour
         }
 
         SetEmission(emissionBaseColor * targetIntensity);
-        isHot = targetIntensity > .01f ? true : false; 
+        isHot = targetIntensity > coldIntensit;
     }
 
     private void SetEmission(Color color)

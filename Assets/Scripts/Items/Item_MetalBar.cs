@@ -42,4 +42,21 @@ public class Item_MetalBar : Item_Base
         else
             inputHelp.RemoveInput();
     }
+
+    public void EnableHot(bool enableHot)
+    {
+        if (enableHot)
+        {
+            heatHandler.TransitionToHot(.1f);
+            return;
+        }
+
+
+        heatHandler.TransitionToCool(.1f);
+    }
+
+    public override bool CanBePickedUp()
+    {
+        return base.CanBePickedUp() && heatHandler.isHot == false;
+    }
 }

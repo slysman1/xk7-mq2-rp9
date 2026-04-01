@@ -47,7 +47,7 @@ public class FurnaceHolder_ProductionResult : ItemHolder
 
         template.EnableHot(true);
         if (goldPlatesData.Contains(template.itemData))
-            template.CreateTemperPoints();
+            template.InitializeTemperPoints();
     }
 
     protected override void OnItemRemoved(Item_Base item)

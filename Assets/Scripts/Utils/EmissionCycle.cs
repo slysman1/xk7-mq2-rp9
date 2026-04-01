@@ -17,9 +17,9 @@ public class EmissionCycle : MonoBehaviour
 
     private void Start()
     {
-        emissionA = ColorManager.instance.emissionA;
-        emissionB = ColorManager.instance.emissionB;
-        cycleDuration = ColorManager.instance.cycleDuration;
+        emissionA = ColorConfig.Get().emissionA;
+        emissionB = ColorConfig.Get().emissionB;
+        cycleDuration = ColorConfig.Get().cycleDuration;
 
         Renderer rend = GetComponent<Renderer>();
 
