@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class CoinTemplate_TemperPoint : FocusArea
+public class CoinTemplate_TemperPoint : FocusPoint
 {
     [Header("Target")]
     [SerializeField] private Renderer targetRenderer;

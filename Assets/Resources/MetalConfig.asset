@@ -12,6 +12,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de104ef394341f143a6f659d752927ca, type: 3}
   m_Name: MetalConfig
   m_EditorClassIdentifier: Assembly-CSharp::MetalConfigSO
-  copperItems: []
-  silverItems: []
-  goldItems: []
+  copperItems:
+  - {fileID: 11400000, guid: d3a5310ced061c949b91e6db9ee2bc25, type: 2}
+  - {fileID: 11400000, guid: fbdeff5e8d8b45e4caf3e1c131175420, type: 2}
+  - {fileID: 11400000, guid: c10d06ca4fc0bba40a3ab9ca2cd5c3ac, type: 2}
+  - {fileID: 11400000, guid: 5773c30492226f4458c63e05ea164d32, type: 2}
+  - {fileID: 11400000, guid: 4e623ab4547e62842a18a069214033e6, type: 2}
+  - {fileID: 11400000, guid: 27064f90f1fca884487bc3b1131d0fb0, type: 2}
+  - {fileID: 11400000, guid: 0cd2eee5639a03a46bd4cd8dacd874b4, type: 2}
+  - {fileID: 11400000, guid: 7449cfbd066a931499e44591cbe61439, type: 2}
+  silverItems:
+  - {fileID: 11400000, guid: e69cf55be927d0649ae7163ba24fb634, type: 2}
+  - {fileID: 11400000, guid: d6f468eec4cba054a86a97e1d4df7f7c, type: 2}
+  - {fileID: 11400000, guid: 1e9536717b244ac4ca9b99c0fd0185b0, type: 2}
+  - {fileID: 11400000, guid: c6eabf2fd94777042918b38200c9ef59, type: 2}
+  - {fileID: 11400000, guid: 5303a5b44dd79164895ecf0b373aa15e, type: 2}
+  - {fileID: 11400000, guid: 211daedfad903a44ca8e41b12cd8f43c, type: 2}
+  - {fileID: 11400000, guid: bb6a752b7cd5f754884407928cfc4a90, type: 2}
+  - {fileID: 11400000, guid: 38dc389d2e290a64b87750d9ce56f299, type: 2}
+  goldItems:
+  - {fileID: 11400000, guid: ae37ac0ff6f071843bc1a31e4ab89574, type: 2}
+  - {fileID: 11400000, guid: 42a50bd398422124e86833c3582829ac, type: 2}
+  - {fileID: 11400000, guid: 4cdbea03e1bffe3448b653acd4fe570f, type: 2}
+  - {fileID: 11400000, guid: eceba78694369f24090e00ccf7faeae8, type: 2}
+  - {fileID: 11400000, guid: b98781f019fd3f542be28236fdaa2540, type: 2}
+  - {fileID: 11400000, guid: 7d81b934426fe93419309f391926e924, type: 2}
+  - {fileID: 11400000, guid: cfcc4a79223581a4cb2718c21a0d880d, type: 2}
+  - {fileID: 11400000, guid: bc464d97a3b908f408c3f6ec36f5c22a, type: 2}

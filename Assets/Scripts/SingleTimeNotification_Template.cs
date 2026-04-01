@@ -19,16 +19,7 @@ public class SingleTimeNotification_Template : SingleTimeNotification
     {
         base.Awake();
         template = GetComponent<Item_CoinTemplate>();
-
-        foreach (var data in silverTemplateData)
-        {
-            if (template.itemData == data)
-            {
-                isSilverTemplate = true;
-                return;
-            }
-
-        }
+        isSilverTemplate = MetalConfig.IsSilver(template);
     }
 
 }

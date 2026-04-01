@@ -19,9 +19,6 @@ public class FurnaceHolder_ProductionResult : ItemHolder
     [SerializeField] private Transform smallPlacementPoint;
     [SerializeField] private Transform medPlacementPoint;
     [SerializeField] private Transform largePlacementPoint;
-
-    [Space]
-    [SerializeField] private ItemDataSO[] goldPlatesData;
     private Vector3 defaultOriginalPosition;
 
     protected override void Awake()
@@ -46,7 +43,8 @@ public class FurnaceHolder_ProductionResult : ItemHolder
         template.transform.rotation = point.rotation;
 
         template.EnableHot(true);
-        if (goldPlatesData.Contains(template.itemData))
+
+        if (MetalConfig.IsGold(template))
             template.InitializeTemperPoints();
     }
 

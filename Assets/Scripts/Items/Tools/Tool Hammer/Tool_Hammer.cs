@@ -87,7 +87,7 @@ public class Tool_Hammer : Item_Tool
             else
             { 
             
-                if (template.GetValue() == 10 && template.EmptyPlate())
+                if (template.itemData.creditValue == 10 && template.EmptyPlate())
                 {
                     itemCombiner.TryConvertToBars(template);
                     return;

@@ -326,6 +326,49 @@ namespace Alexdev
 
             canvasGroup.alpha = targetAlpha;
         }
+
+        public static IEnumerator EmissionTo(Material mat, Color target, float duration)
+        {
+            Color start = mat.GetColor("_EmissionColor");
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                mat.SetColor("_EmissionColor", Color.Lerp(start, target, elapsed / duration));
+                yield return null;
+            }
+
+            mat.SetColor("_EmissionColor", target);
+        }
+
+        public static IEnumerator EmissionTo(Material[] mats, Color target, float duration)
+        {
+            float elapsed = 0f;
+            float startIntensity = mats[0].GetColor("_EmissionColor").maxColorComponent;
+            Color startColor = mats[0].GetColor("_EmissionColor");
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                Color current = Color.Lerp(startColor, target, t);
+                foreach (var mat in mats)
+                    if (mat.HasProperty("_EmissionColor"))
+                    {
+                        mat.SetColor("_EmissionColor", current);
+                        mat.EnableKeyword("_EMISSION");
+                    }
+                yield return null;
+            }
+
+            foreach (var mat in mats)
+                if (mat.HasProperty("_EmissionColor"))
+                {
+                    mat.SetColor("_EmissionColor", target);
+                    mat.EnableKeyword("_EMISSION");
+                }
+        }
     }
 #if UNITY_EDITOR
 

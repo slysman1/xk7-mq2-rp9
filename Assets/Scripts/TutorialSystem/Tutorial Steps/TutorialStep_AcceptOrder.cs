@@ -26,10 +26,10 @@ public class TutorialStep_AcceptOrder : TutorialStep
         
 
         scrollAttachedToBoard = false;
-        Holder_QuestTrackers.OnScrollAttached += HandleTask;
+        OrderBoardHolder_Scroll.OnScrollAttached += HandleTask;
 
-        TutorialIndicator.HighlightTarget<Item_QuestScroll>();
-        TutorialIndicator.HighlightTarget<Holder_QuestTrackers>();
+        TutorialIndicator.HighlightTarget<Item_OrderScroll>();
+        TutorialIndicator.HighlightTarget<OrderBoardHolder_Scroll>();
 
         UpdateCurrentGoalUI();
 
@@ -38,7 +38,7 @@ public class TutorialStep_AcceptOrder : TutorialStep
 
     public override void StopTask()
     {
-        Holder_QuestTrackers.OnScrollAttached -= HandleTask;
+        OrderBoardHolder_Scroll.OnScrollAttached -= HandleTask;
     }
 
     public override void UpdateCurrentGoalUI()

@@ -9,6 +9,7 @@ public class Item_CoinTemplate : Item_Base
     [Header("Template details")]
     [SerializeField] private float coolingDuration = 1.5f;
     [SerializeField] private ItemDataSO coinPrefab;
+    [SerializeField] private ParticleSystem hotDisstortionVfx;
 
 
     [Header("Temper details")]
@@ -19,8 +20,6 @@ public class Item_CoinTemplate : Item_Base
     [SerializeField] private List<CoinTemplate_TemperPoint> temperPoints = new List<CoinTemplate_TemperPoint>();
     private BoxCollider spawnArea;
     
-    [Header("Recycle Details")]
-    [SerializeField] private int refineValue;
 
 
     protected override void Awake()
@@ -56,7 +55,7 @@ public class Item_CoinTemplate : Item_Base
                 {
                     Hammer_ItemCombiner combiner = itemInHand.GetComponent<Hammer_ItemCombiner>();
 
-                    if (GetValue() == 10 && EmptyPlate())
+                    if (itemData.creditValue == 10 && EmptyPlate())
                     {
 
                         if (combiner.CanRefineTemplates(transform))
@@ -65,7 +64,7 @@ public class Item_CoinTemplate : Item_Base
                             inputHelp.AddInput(KeyType.LMB, "input_help_template_cannot_refine_need_more");
                     }
 
-                    if (GetValue() < 10 && EmptyPlate())
+                    if (itemData.creditValue < 10 && EmptyPlate())
                     {
                         if (combiner.CanCombineTemplates(transform))
                             inputHelp.AddInput(KeyType.LMB, "input_help_template_can_combine");
@@ -194,10 +193,12 @@ public class Item_CoinTemplate : Item_Base
         if (enableHot)
         {
             heatHandler.TransitionToHot(.1f);
+            hotDisstortionVfx.Play();
             return;
         }
 
 
+        hotDisstortionVfx.Stop();
         heatHandler.TransitionToCool(coolingDuration);
     }
 
@@ -212,13 +213,6 @@ public class Item_CoinTemplate : Item_Base
         return coinSlots.Count(p => p.gameObject.activeSelf) == 0;
     }
 
-    public int GetValue()
-    {
-        if (refineValue == 0)
-            return coinSlots.Count();
-
-        return refineValue;
-    }
 
     public override bool CanBePickedUp()
     {

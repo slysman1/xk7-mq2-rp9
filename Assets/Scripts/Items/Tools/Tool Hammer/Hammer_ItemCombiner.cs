@@ -38,17 +38,14 @@ public class Hammer_ItemCombiner : MonoBehaviour
             var bar = col.GetComponent<Item_MetalBar>();
             if (bar == null) continue;
 
-            foreach (var item in copperBarPrefabs)
-                if (bar.itemData == item.itemData)
-                    copper.Add(bar);
+            if (MetalConfig.IsCopper(bar))
+                copper.Add(bar);
 
-            foreach (var item in silverBarPrefabs)
-                if (bar.itemData == item.itemData)
-                    silver.Add(bar);
+            if (MetalConfig.IsSilver(bar))
+                silver.Add(bar);
 
-            foreach (var item in goldBarPrefabs)
-                if (bar.itemData == item.itemData)
-                    gold.Add(bar);
+            if (MetalConfig.IsGold(bar))
+                gold.Add(bar);
         }
 
         CombineMetalBar(copper.ToArray(), copperBarPrefabs);
@@ -66,7 +63,7 @@ public class Hammer_ItemCombiner : MonoBehaviour
         {
             if (bar == null) continue;
 
-            int val = bar.GetMetalBarValue();
+            int val = bar.itemData.creditValue;
 
             if (val == 2) twos.Add(bar);
             else if (val == 6) sixes.Add(bar);
@@ -147,7 +144,7 @@ public class Hammer_ItemCombiner : MonoBehaviour
         // 📍 spawn stack
         float yOffset = 0f;
 
-        foreach (var bar in created.OrderByDescending(b => b.GetMetalBarValue()))
+        foreach (var bar in created.OrderByDescending(b => b.itemData.creditValue))
         {
             bar.transform.position = detectionPoint.position + Vector3.up * yOffset;
             bar.EnableKinematic(false);
@@ -191,7 +188,7 @@ public class Hammer_ItemCombiner : MonoBehaviour
             if (plate.EmptyPlate() != shouldBeEmpty)
                 continue;
 
-            int val = plate.GetValue();
+            int val = plate.itemData.creditValue;
 
             if (val == 2) twos.Add(plate);
             else if (val == 6) sixes.Add(plate);
@@ -270,7 +267,7 @@ public class Hammer_ItemCombiner : MonoBehaviour
         }
 
         // 📊 SORT (big → small)
-        createdPlates.Sort((a, b) => b.GetValue().CompareTo(a.GetValue()));
+        createdPlates.Sort((a, b) => b.itemData.creditValue.CompareTo(a.itemData.creditValue));
 
         // 📍 POSITION STACK (big bottom)
         float yOffset = 0f;
@@ -333,17 +330,14 @@ public class Hammer_ItemCombiner : MonoBehaviour
             if (plate.EmptyPlate() == false && useEmptyPlates)
                 continue;
 
-            foreach (var item in copperTemplates)
-                if (plate.itemData == item.itemData)
-                    copper.Add(plate);
+            if (MetalConfig.IsCopper(plate))
+                copper.Add(plate);
 
-            foreach (var item in silverTemplates)
-                if (plate.itemData == item.itemData)
-                    silver.Add(plate);
+            if (MetalConfig.IsSilver(plate))
+                silver.Add(plate);
 
-            foreach (var item in goldTemplates)
-                if (plate.itemData == item.itemData)
-                    gold.Add(plate);
+            if (MetalConfig.IsGold(plate))
+                gold.Add(plate);
         }
 
 
@@ -365,7 +359,7 @@ public class Hammer_ItemCombiner : MonoBehaviour
             if (plate == null || !plate.EmptyPlate())
                 continue;
 
-            if (plate.GetValue() == 10)
+            if (plate.itemData.creditValue == 10)
                 tens.Add(plate);
         }
 
@@ -408,7 +402,7 @@ public class Hammer_ItemCombiner : MonoBehaviour
     private ItemDataSO GetTemplateByValue(Item_CoinTemplate[] platePrefabs, int value)
     {
         foreach (var prefab in platePrefabs)
-            if (prefab.GetValue() == value)
+            if (prefab.itemData.creditValue == value)
                 return prefab.itemData;
 
         return null;
@@ -418,7 +412,7 @@ public class Hammer_ItemCombiner : MonoBehaviour
     private ItemDataSO GetmetalBarByValue(Item_MetalBar[] barPrefabs, int value)
     {
         foreach (var prefab in barPrefabs)
-            if (prefab.GetMetalBarValue() == value)
+            if (prefab.itemData.creditValue == value)
                 return prefab.itemData;
 
         return null;
@@ -426,18 +420,14 @@ public class Hammer_ItemCombiner : MonoBehaviour
 
     private Item_MetalBar[] GetBarPrefabsByTemplate(Item_CoinTemplate template)
     {
+        if (MetalConfig.IsCopper(template)) 
+            return copperBarPrefabs;
 
-        foreach (var prefab in copperTemplates)
-            if (prefab.itemData == template.itemData)
-                return copperBarPrefabs;
+        if (MetalConfig.IsSilver(template))
+            return silverBarPrefabs;
 
-        foreach (var prefab in silverTemplates)
-            if (prefab.itemData == template.itemData)
-                return silverBarPrefabs;
-
-        foreach (var prefab in goldTemplates)
-            if (prefab.itemData == template.itemData)
-                return goldBarPrefabs;
+        if (MetalConfig.IsGold(template))
+            return goldBarPrefabs;
 
         return null;
     }
@@ -450,7 +440,7 @@ public class Hammer_ItemCombiner : MonoBehaviour
 
         foreach (var b in bars)
         {
-            int v = b.GetMetalBarValue();
+            int v = b.itemData.creditValue;
             if (v == 2) twos++;
             else if (v == 6) sixes++;
         }
@@ -467,7 +457,7 @@ public class Hammer_ItemCombiner : MonoBehaviour
 
         foreach (var p in plates)
         {
-            int v = p.GetValue();
+            int v = p.itemData.creditValue;
             if (v == 2) twos++;
             else if (v == 6) sixes++;
         }
@@ -478,7 +468,7 @@ public class Hammer_ItemCombiner : MonoBehaviour
     public bool CanRefineTemplates(Transform target)
     {
         int tens = GetNearby<Item_CoinTemplate>(target)
-            .Count(p => p.EmptyPlate() && p.GetValue() == 10);
+            .Count(p => p.EmptyPlate() && p.itemData.creditValue == 10);
 
         return tens >= platesNeededToRefine;
     }

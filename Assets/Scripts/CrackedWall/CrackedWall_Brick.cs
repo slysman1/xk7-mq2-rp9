@@ -7,12 +7,12 @@ public class CrackedWall_Brick : MonoBehaviour
     private Rigidbody rb;
 
     public bool canBePushed;
-    public FocusArea focusArea;
+    public FocusPoint focusArea;
 
 
     private void Awake()
     {
-        focusArea = GetComponentInChildren<FocusArea>(true);
+        focusArea = GetComponentInChildren<FocusPoint>(true);
         emissionCycle = GetComponentInChildren<EmissionCycle>(true);
         rb = GetComponent<Rigidbody>();
     }

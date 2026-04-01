@@ -1,10 +1,19 @@
 public class Item_OrderBoard : Item_Base
 {
 
+    private OrderBoardHolder_Scroll scrollHolder;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        scrollHolder = GetComponentInChildren<OrderBoardHolder_Scroll>();
+    }
+
     public override void Highlight(bool enable)
     {
         base.Highlight(enable);
         ShowInputUI(enable);
+        scrollHolder.ShowSlots(true);
     }
 
     public override void ShowInputUI(bool enable)
@@ -23,7 +32,7 @@ public class Item_OrderBoard : Item_Base
 
             Item_Base itemInHand = inventory.GetTopItem();
 
-            if (itemInHand != null && itemInHand.GetComponent<Item_QuestScroll>() != null)
+            if (itemInHand != null && itemInHand.GetComponent<Item_OrderScroll>() != null)
                 inputHelp.AddInput(KeyType.RMB, "input_help_add_order_scroll");
         }
         else

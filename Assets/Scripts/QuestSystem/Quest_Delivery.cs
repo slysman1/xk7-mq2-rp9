@@ -46,8 +46,8 @@ public class Quest_Delivery : MonoBehaviour
         OrderManager.instance.NotifyOrderCompleted(orderToComplete);
         DirtManager.instance.TryCreateWeb();
 
-        Holder_QuestTrackers[] orderBoards =
-            FindObjectsByType<Holder_QuestTrackers>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        OrderBoardHolder_Scroll[] orderBoards =
+            FindObjectsByType<OrderBoardHolder_Scroll>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
         foreach (var board in orderBoards)
             board.RemoveOrder(orderToComplete);

@@ -11,12 +11,7 @@ public class Tool_CoinStamp : Item_Tool
     [SerializeField] protected Vector3 coinFeedbackVelocity = new Vector3(0, 2.75f);
     [SerializeField] private float minFeedbackRotation = 10f;
     [SerializeField] private float maxFeedbackRotation = 20f;
-    [SerializeField] private ItemDataSO allowedToStamp;
-
-    // Ideal stamp speed ( arc move duration ) is .2f seconds.
-    // But we want to introduce upgrades to bring player to that value
-    // So by default it will be .25f
-    // 1 upgrade (−5%): 0.2375 s// 2 upgrades: 0.225 s// 3 upgrades: 0.2125 s// 4 upgrades: 0.20 s
+  
 
     protected override IEnumerator PerformInteractionCo(Item_Base item)
     {
@@ -30,9 +25,7 @@ public class Tool_CoinStamp : Item_Tool
         StartCoroutine(SetRotationAs(transform, coin.GetFacingRotation().eulerAngles, moveDuration));
         yield return StartCoroutine(ArcMovement(transform, coin.transform, Vector3.zero, arcMovement, moveDuration));
 
-
-
-        if (coin.itemData == allowedToStamp)
+        if (MetalConfig.SameMetalType(this, coin))
             coin.EnableStamps();
 
         TutorialManager.instance.silverStampTutorial.ShowSilverStampTutorialIndicatorIfNeeded(itemData,coin.itemData);
@@ -40,7 +33,7 @@ public class Tool_CoinStamp : Item_Tool
 
 
 
-        Audio.PlaySFX("coin_stamp", transform);// .PlayTestSound(transform.position);
+        Audio.PlaySFX("coin_stamp", transform);
         float randomFeedbackRotation = Random.Range(minFeedbackRotation, maxFeedbackRotation);
         coin.PlayFeedback(velocity, randomFeedbackRotation);
 
@@ -63,6 +56,4 @@ public class Tool_CoinStamp : Item_Tool
         if (objectIndicator != null)
             objectIndicator.Detach(null);
     }
-
-    public ItemDataSO GetAllowedToStampCoinData() => allowedToStamp;
 }

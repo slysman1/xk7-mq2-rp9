@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class Item_QuestScroll : Item_Base
+public class Item_OrderScroll : Item_Base
 {
     public static event Action OnScrollUnpacked;
 
@@ -10,11 +10,6 @@ public class Item_QuestScroll : Item_Base
     [SerializeField] private GameObject foldedScroll;
     [SerializeField] private GameObject unfoldedScroll;
 
-
-    public override void Highlight(bool enable)
-    {
-        base.Highlight(enable);
-    }
 
     public void SetupScroll(OrderDataSO orderData)
     {

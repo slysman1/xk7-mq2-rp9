@@ -296,6 +296,11 @@ public class ItemHolder : MonoBehaviour, IHighlightable
             outline.EnableOutline(enable ? OutlineType.Highlight : OutlineType.None);
     }
 
+    public virtual void ShowSlots(bool showSlots)
+    {
+
+    }
+
     protected virtual void ShowInputUI(bool enable)
     {
 

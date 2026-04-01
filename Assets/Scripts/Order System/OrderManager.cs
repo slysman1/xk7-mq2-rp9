@@ -213,8 +213,8 @@ public class OrderManager : MonoBehaviour
 
     private GameObject GetNewScroll(OrderDataSO order)
     {
-        Item_QuestScroll newScroll =
-            itemManager.CreateItem(orderScrollData).GetComponent<Item_QuestScroll>();
+        Item_OrderScroll newScroll =
+            itemManager.CreateItem(orderScrollData).GetComponent<Item_OrderScroll>();
 
         newScroll.SetupScroll(order);
 

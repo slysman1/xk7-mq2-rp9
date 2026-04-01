@@ -1,36 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Alexdev.TweenUtils;
 
 public class HeatEmission : MonoBehaviour
 {
     private Color emissionBaseColor;
-
     private float hotIntensity;
-    private float coldIntensit = 0.01f;
-
+    private float coldIntensity;
     private Material[] materialInstances;
     public Coroutine changeTempretureCo;
     public bool isHot { get; private set; }
 
     private void Awake()
     {
-        var renderers = GetComponentsInChildren<MeshRenderer>();
         emissionBaseColor = ColorConfig.Get().hotEmissionColor;
         hotIntensity = ColorConfig.Get().hotEmissionIntensity;
-        coldIntensit = ColorConfig.Get().coldEmissionIntensity;
+        coldIntensity = ColorConfig.Get().coldEmissionIntensity;
 
         List<Material> mats = new List<Material>();
-
-        foreach (var r in renderers)
+        foreach (var r in GetComponentsInChildren<MeshRenderer>())
         {
             Material[] instancedMats = r.materials;
-            r.materials = instancedMats; // ensure unique instances
+            r.materials = instancedMats;
             mats.AddRange(instancedMats);
         }
-
         materialInstances = mats.ToArray();
-
     }
 
     public void TransitionToHot(float duration)
@@ -40,7 +35,7 @@ public class HeatEmission : MonoBehaviour
 
     public void TransitionToCool(float duration)
     {
-        StartEmissionRoutine(coldIntensit, duration);
+        StartEmissionRoutine(coldIntensity, duration);
     }
 
     private void StartEmissionRoutine(float targetIntensity, float duration)
@@ -48,39 +43,15 @@ public class HeatEmission : MonoBehaviour
         if (changeTempretureCo != null)
             StopCoroutine(changeTempretureCo);
 
-        changeTempretureCo = StartCoroutine(AnimateEmission(targetIntensity, duration));
+        changeTempretureCo = StartCoroutine(EmissionRoutine(targetIntensity, duration));
     }
 
-    private IEnumerator AnimateEmission(float targetIntensity, float duration)
+    private IEnumerator EmissionRoutine(float targetIntensity, float duration)
     {
         if (materialInstances == null || materialInstances.Length == 0)
             yield break;
 
-        float time = 0f;
-        float startIntensity = materialInstances[0].GetColor("_EmissionColor").maxColorComponent;
-
-        while (time < duration)
-        {
-            time += Time.deltaTime;
-            float t = Mathf.Clamp01(time / duration);
-            float intensity = Mathf.Lerp(startIntensity, targetIntensity, t);
-            SetEmission(emissionBaseColor * intensity);
-            yield return null;
-        }
-
-        SetEmission(emissionBaseColor * targetIntensity);
-        isHot = targetIntensity > coldIntensit;
-    }
-
-    private void SetEmission(Color color)
-    {
-        foreach (var mat in materialInstances)
-        {
-            if (mat.HasProperty("_EmissionColor"))
-            {
-                mat.SetColor("_EmissionColor", color);
-                mat.EnableKeyword("_EMISSION");
-            }
-        }
+        yield return StartCoroutine(EmissionTo(materialInstances, emissionBaseColor * targetIntensity, duration));
+        isHot = targetIntensity > coldIntensity;
     }
 }

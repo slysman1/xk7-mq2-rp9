@@ -6,10 +6,7 @@ public class Item_MetalBar : Item_Base
 
 
     public ItemDataSO GetProductionResult() => productionResult;
-    public int GetMetalBarValue()
-    {
-        return productionResult.itemPrefab.GetComponent<Item_CoinTemplate>().GetValue();
-    }
+
 
     public override void ShowInputUI(bool enable)
     {
@@ -30,7 +27,7 @@ public class Item_MetalBar : Item_Base
             {
                 Hammer_ItemCombiner combiner = itemInHand.GetComponent<Hammer_ItemCombiner>();
 
-                if (GetMetalBarValue() < 10)
+                if (itemData.creditValue < 10)
                 {
                     if (combiner.CanCombineBars(transform))
                         inputHelp.AddInput(KeyType.LMB, "input_help_metal_bar_can_combine");

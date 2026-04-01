@@ -6,14 +6,14 @@ using UnityEngine;
 
 public class Item_WoodenLogSet : Item_Base
 {
-    public FocusArea currentFocus { get; private set; }
+    public FocusPoint currentFocus { get; private set; }
     //private Object_Outline[] outlines;
     private Workstation_WoodStation woodStation;
 
 
     [SerializeField] private GameObject[] longLogs;
     [SerializeField] private List<Item_Base> shortLogs = new List<Item_Base>();
-    [SerializeField] private List<FocusArea> focusPoints;
+    [SerializeField] private List<FocusPoint> focusPoints;
     private int chopCount;
     private int maxChopCount = 3;
 

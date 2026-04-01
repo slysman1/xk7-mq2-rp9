@@ -14,4 +14,10 @@ public static class MetalConfig
     public static bool IsGold(Item_Base item) => Get().goldItems.Contains(item.itemData);
     public static bool IsSilver(Item_Base item) => Get().silverItems.Contains(item.itemData);
     public static bool IsCopper(Item_Base item) => Get().copperItems.Contains(item.itemData);
+    public static bool SameMetalType(Item_Base a, Item_Base b)
+    {
+        return (IsCopper(a) && IsCopper(b)) ||
+               (IsSilver(a) && IsSilver(b)) ||
+               (IsGold(a) && IsGold(b));
+    }
 }

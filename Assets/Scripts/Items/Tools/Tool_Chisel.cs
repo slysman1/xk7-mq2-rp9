@@ -5,14 +5,14 @@ using static Alexdev.TweenUtils;
 public class Tool_Chisel : Item_Tool
 {
     public Holder_CrackedWall wall { get; private set; }
-    private FocusArea focusPoint;
+    private FocusPoint focusPoint;
 
     public bool wasHit { get; private set; }
 
     protected override void Awake()
     {
         base.Awake();
-        focusPoint = GetComponentInChildren<FocusArea>(true);
+        focusPoint = GetComponentInChildren<FocusPoint>(true);
     }
 
     public override void Highlight(bool enable)

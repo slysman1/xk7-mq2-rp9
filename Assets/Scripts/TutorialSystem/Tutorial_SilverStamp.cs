@@ -18,14 +18,14 @@ public class Tutorial_SilverStamp : MonoBehaviour
         {
             List<Tool_CoinStamp> allStamps = ItemManager.instance.FindAllItemsWithComponent<Tool_CoinStamp>();
 
-            foreach (var stamp in allStamps)
-            {
-                if(stamp.GetAllowedToStampCoinData() == coinData)
-                {
-                    TutorialIndicator.HighlightTargetTransform(stamp.transform);
-                    canShowSilverStampIndicator = false;
-                }
-            }
+            //foreach (var stamp in allStamps)
+            //{
+            //    if(stamp.GetAllowedToStampCoinData() == coinData)
+            //    {
+            //        TutorialIndicator.HighlightTargetTransform(stamp.transform);
+            //        canShowSilverStampIndicator = false;
+            //    }
+            //}
         }
     }
 }
