@@ -147,8 +147,6 @@ public class Workstation_CoinCut : Workstation
 
     private bool IsWorking() => createCoinCo != null;
     protected override bool CanBeExecuted() => templateHolder.GetItemCount() <= 1 && IsWorking() == false;
-    
-    //public bool CanBeCut() => 
 
     private void CreateCoin()
     {

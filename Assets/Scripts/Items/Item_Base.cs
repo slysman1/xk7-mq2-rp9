@@ -39,7 +39,7 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
     protected MeshRenderer meshRenderer;
     protected MeshFilter meshFilter;
     protected UI_OnObjectIndicator objectIndicator;
-    protected UI_InputHelp inputHelp;
+    protected UI_InputHelp inputHelp => UI.instance.inputHelp;
     public ItemHolder currentItemHolder { get; private set; }
 
     public bool blockOutline;
@@ -79,9 +79,7 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
 
     protected virtual void Start()
     {
-        inputHelp = UI.instance.inputHelp;
         inventory = player.inventory;
-
     }
 
     public virtual void Interact(Transform carryPoint)

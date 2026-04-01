@@ -72,10 +72,7 @@ public class Player_Highlighter : MonoBehaviour
         Item_Base detectedItem = hit.collider.GetComponent<Item_Base>();
         Item_Base itemInHand = player.inventory.GetTopItem();
 
-        if (detectedItem == null)
-            return false;
-
-        if (itemInHand == false)
+        if (detectedItem == null || itemInHand == null)
             return false;
 
         if (itemInHand is Item_Tool toolInHand)

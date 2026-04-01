@@ -49,8 +49,7 @@ public class ItemHolder : MonoBehaviour, IHighlightable
     {
         outline = GetComponentInChildren<Object_Outline>();
         atachedItemData = GetComponent<Item_Base>()?.itemData;
-        itemBase = GetComponent<Item_Base>();
-
+        itemBase = GetComponentInParent<Item_Base>();
     }
 
 
@@ -225,7 +224,10 @@ public class ItemHolder : MonoBehaviour, IHighlightable
         var slot = GetPlacementPoint();
 
         if (slot == null)
+        {
+            Debug.Log("Tried to add with no slot.");
             return;
+        }
 
         item.transform.position = slot.position;
         item.transform.rotation = slot.rotation; 

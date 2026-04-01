@@ -17,7 +17,6 @@ public class Workstation_Furnace : Workstation
 
     [Header("Materials & Production Details")]
     [SerializeField] private float productionDuration = 3f;
-    [SerializeField] private float deliveryDuration = 1f;
     [SerializeField] private int metalNeededPerProduction = 1;
     [SerializeField] private int logsNeededPerProduction = 2;
     public bool isBusy { get; private set; }
@@ -26,7 +25,6 @@ public class Workstation_Furnace : Workstation
     [Header("Speed Up Production Details")]
     [SerializeField] private float speedUpInteractionTime = 1f;
     [SerializeField] private float quickProductionTime = 3f;
-    private float productionEndTime;
     private Coroutine speedUpProductionCo;
 
     [Header("Delivery Details")]
@@ -72,15 +70,10 @@ public class Workstation_Furnace : Workstation
     {
         base.ExecuteSecondInteraction(caller);
 
-        if (isBusy == false || speedUpProductionCo != null)
+        if(CanExecuteSecondInteraction() == false)
             return;
 
-        float remainingTime = productionEndTime - Time.time;
-
-        if (remainingTime <= quickProductionTime)
-            return;
-
-        speedUpProductionCo = StartCoroutine(SpeedUpProductionCo(remainingTime));
+        speedUpProductionCo = StartCoroutine(SpeedUpProductionCo());
     }
 
 
@@ -96,11 +89,10 @@ public class Workstation_Furnace : Workstation
     {
         isBusy = true;
         deliveryDoor.CloseDoor();
-        productionEndTime = Time.time + productionDuration;
         hotMetalDummy.position = hotMetalOriginalPosition;
 
 
-        Item_MetalBar ingridientToUse = metalBarHolder.GetIngridient();
+        Item_MetalBar ingridientToUse = metalBarHolder.GetMetalBar();
 
         ingridientToUse.heatHandler.TransitionToHot(.5f);
         ingridientToUse.SetCanPickUpTo(false);
@@ -130,7 +122,7 @@ public class Workstation_Furnace : Workstation
 
 
         ItemDataSO productionResult = ingridientToUse.GetProductionResult();
-        Item_CoinTemplate newProduct = ItemManager.instance.CreateItem(productionResult).GetComponent<Item_CoinTemplate>();
+        Item_Base newProduct = ItemManager.instance.CreateItem(productionResult).GetComponent<Item_Base>();
 
         this.productionResult.AddItem(newProduct);
 
@@ -171,10 +163,8 @@ public class Workstation_Furnace : Workstation
         isBusy = false;
     }
 
-    private IEnumerator SpeedUpProductionCo(float remainingTime)
+    private IEnumerator SpeedUpProductionCo()
     {
-
-        // Speed up systems
         StartCoroutine(ScaleLocal(fireFx.transform, Vector3.one * .4f, .1f));
         Audio.PlaySFX("fire_start", transform);
         bellowsAnimation.SpeedUpAnimation(true);
@@ -213,10 +203,10 @@ public class Workstation_Furnace : Workstation
     }
     protected override bool CanBeExecuted()
     {
-        if (logHolder.GetItemCount() < logsNeededPerProduction)
+        if (HasEnoughLogs() == false)
             return false;
 
-        if (metalBarHolder.GetItemCount() < metalNeededPerProduction)
+        if (HasEnoughMetalBars() == false)
             return false;
 
         if (isBusy)
@@ -230,16 +220,14 @@ public class Workstation_Furnace : Workstation
         return speedUpInteractionTime;
     }
 
-    public override bool IsBusy()
-    {
-        return isBusy;
-    }
+    public override bool IsBusy() => isBusy;
 
     public override bool CanExecuteSecondInteraction()
     {
-        return CanSpeedUp() && isBusy == false;
+        bool isWorkingAndHasEnoughRemainingTime = remainingProductionTime > quickProductionTime && isBusy;
+        return isWorkingAndHasEnoughRemainingTime && speedUpProductionCo == null;
     }
-    private bool CanSpeedUp() => remainingProductionTime > quickProductionTime;
+
     public bool HasEnoughLogs() => logHolder.GetItemCount() >= logsNeededPerProduction;
     public bool HasEnoughMetalBars() => metalBarHolder.GetItemCount() >= metalNeededPerProduction;
     public int LogsNeeded() => logsNeededPerProduction;

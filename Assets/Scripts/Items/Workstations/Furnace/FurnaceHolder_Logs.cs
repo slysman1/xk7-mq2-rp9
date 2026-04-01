@@ -5,13 +5,14 @@ using System.Linq;
 public class FurnaceHolder_Logs : ItemHolder
 {
     protected Workstation_Furnace workstationFurnace;
-    public static event Action OnLogAdded;
     private List<FurnaceHolder_LogSlot> logSlots;
+    public static event Action OnLogAdded;
 
     protected override void Awake()
     {
         base.Awake();
         logSlots = SetupSlots<FurnaceHolder_LogSlot>();
+        workstationFurnace = GetComponentInParent<Workstation_Furnace>();
     }
 
     public override void Highlight(bool enable)
@@ -22,7 +23,6 @@ public class FurnaceHolder_Logs : ItemHolder
 
     protected override void OnItemAdded(Item_Base item)
     {
-
         base.OnItemAdded(item);
 
         Audio.PlaySFX("wood_added", transform);
@@ -44,7 +44,5 @@ public class FurnaceHolder_Logs : ItemHolder
                 logSlots[i].gameObject.SetActive(true); // was fuelSlots
         }
     }
-
-    public List<Item_Base> GetFuelList() => currentItems.ToList();
 
 }

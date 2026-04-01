@@ -163,6 +163,7 @@ public class Player_PreviewHandler : MonoBehaviour
         if (isPlacingItem == false)
             return;
 
+        itemBeingPlaced.EnableCamPriority(true);
         itemBeingPlaced.transform.parent = inventory.GetCarryPoint();
         itemBeingPlaced.transform.localPosition = originalLocalPosition;
         itemBeingPlaced.transform.localRotation = originalLocalRotation;
@@ -178,6 +179,7 @@ public class Player_PreviewHandler : MonoBehaviour
 
     private void StopPlacement()
     {
+
         raycaster.SetDefaultUpdateRate();
         itemBeingPlaced = null;
         isPlacingItem = false;
@@ -499,6 +501,7 @@ public class Player_PreviewHandler : MonoBehaviour
     private IEnumerator ReturnItemToPreview()
     {
         itemBeingPlaced.DisplayItemAsInHolder(false);
+     //   itemBeingPlaced.EnableCamPriority(true);
 
         Vector3 returnTarget = GetPreviewPosition();
 
