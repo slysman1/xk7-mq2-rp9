@@ -28,6 +28,7 @@ public class FurnaceHolder_ProductionResult : ItemHolder
         base.Awake();
         initialLocalPosition = transform.localPosition;
         trayMesh = GetComponent<MeshRenderer>();
+        trayMesh.enabled = false;   
     }
 
     protected override void OnItemAdded(Item_Base item)

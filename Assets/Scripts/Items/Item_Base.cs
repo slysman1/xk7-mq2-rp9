@@ -45,8 +45,7 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
     public bool blockOutline;
     [SerializeField] protected bool itemCanBePickedUp = true;
     public ItemDataSO itemData;
-    [Tooltip("Should be assigned only if item can be carried with tool")]
-    [SerializeField] protected ItemDataSO toolToCarry;
+
 
 
 
@@ -133,16 +132,6 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
     }
 
     public virtual void SeconderyInteraction(Transform caller = null) { }
-
-    public bool CanBeCarriedWithTool(Item_Tool toolInHand)
-    {
-        if (toolToCarry == null)
-            return false;
-
-        return toolInHand.GetItemId() == toolToCarry.itemId;
-
-    }
-    public bool NeedToolToCarry() => toolToCarry != null;
 
     public void SetItemHolder(ItemHolder holder)
     {

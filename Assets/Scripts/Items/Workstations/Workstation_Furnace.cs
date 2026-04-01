@@ -18,7 +18,6 @@ public class Workstation_Furnace : Workstation
     [Header("Materials & Production Details")]
     [SerializeField] private float productionDuration = 3f;
     [SerializeField] private float deliveryDuration = 1f;
-    //[SerializeField] private Transform productPlacePoint; // Where product should be placed after melting
     [SerializeField] private int metalNeededPerProduction = 1;
     [SerializeField] private int logsNeededPerProduction = 2;
     public bool isBusy { get; private set; }
@@ -45,7 +44,6 @@ public class Workstation_Furnace : Workstation
     {
         base.Awake();
 
-        //    outline = GetComponent<Object_Outline>();
         logHolder = GetComponentInChildren<FurnaceHolder_Logs>();
         metalBarHolder = GetComponentInChildren<FurnaceHolder_MetalBar>();
         deliveryDoor = GetComponentInChildren<Furnace_DeliveryDoor>();
@@ -54,7 +52,6 @@ public class Workstation_Furnace : Workstation
 
         productionResult.OnTrayEmptied += CompleteProduction;
 
-        productionResult.trayMesh.enabled = false;
         fireVfxOriginalScale = fireFx.transform.localScale.x;
         hotMetalOriginalPosition = hotMetalDummy.position;
     }
@@ -65,13 +62,10 @@ public class Workstation_Furnace : Workstation
     {
         base.ExecuteInteraction(caller);
 
-        Debug.Log("Started furance");
+        if (CanBeExecuted() == false)
+            return;
 
-        if (CanBeExecuted())
-        {
-            Debug.Log("Started furance because it can b used");
-            ActivateFurnice();
-        }
+        ActivateFurnice();        
     }
 
     public override void ExecuteSecondInteraction(Transform caller = null)
@@ -89,22 +83,6 @@ public class Workstation_Furnace : Workstation
         speedUpProductionCo = StartCoroutine(SpeedUpProductionCo(remainingTime));
     }
 
-    public void EnableFireVFX(bool enable)
-    {
-        fireFx.gameObject.SetActive(true);
-
-        if (enable)
-        {
-            fireFx.Play();
-            Audio.PlaySFX("fire_start", transform);
-            Audio.LoopSFX("fire_loop", transform);
-        }
-        else
-        {
-            fireFx.Stop();
-            Audio.StopLoopSFX("fire_loop");
-        }
-    }
 
 
     private void ActivateFurnice()
@@ -157,7 +135,6 @@ public class Workstation_Furnace : Workstation
         this.productionResult.AddItem(newProduct);
 
         Audio.PlaySFX("producton_result_ready", this.productionResult.transform);
-        //        newProduct.gameObject.SetActive(true);
         DirtManager.instance.TryCreateDirt();
 
 
@@ -218,7 +195,23 @@ public class Workstation_Furnace : Workstation
         speedUpProductionCo = null;
     }
 
-    public override bool CanBeExecuted()
+    private void EnableFireVFX(bool enable)
+    {
+        fireFx.gameObject.SetActive(true);
+
+        if (enable)
+        {
+            fireFx.Play();
+            Audio.PlaySFX("fire_start", transform);
+            Audio.LoopSFX("fire_loop", transform);
+        }
+        else
+        {
+            fireFx.Stop();
+            Audio.StopLoopSFX("fire_loop");
+        }
+    }
+    protected override bool CanBeExecuted()
     {
         if (logHolder.GetItemCount() < logsNeededPerProduction)
             return false;

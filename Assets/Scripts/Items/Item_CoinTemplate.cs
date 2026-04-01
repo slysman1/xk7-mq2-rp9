@@ -6,7 +6,6 @@ using UnityEngine;
 public class Item_CoinTemplate : Item_Base
 {
     private CoinTemplate_Slot[] coinSlots;
-
     [Header("Template details")]
     [SerializeField] private float coolingDuration = 1.5f;
     [SerializeField] private ItemDataSO coinPrefab;

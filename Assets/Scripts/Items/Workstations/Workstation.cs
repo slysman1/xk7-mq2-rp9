@@ -49,7 +49,7 @@ public class Workstation : MonoBehaviour
     
 
 
-    public virtual bool CanBeExecuted()
+    protected virtual bool CanBeExecuted()
     {
         return true;
     }

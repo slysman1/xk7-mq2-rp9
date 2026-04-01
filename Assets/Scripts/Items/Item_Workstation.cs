@@ -30,11 +30,10 @@ public class Item_Workstation : Item_Base
     }
     public override void Interact(Transform caller = null)
     {
-        if (player.interaction.QuickPressLMB())
+        if (player.interaction.QuickPressLMB() && workstation != null)
         {
-            if (workstation != null && workstation.CanBeExecuted())
+            // quick click but no workstation? — do nothing
                 workstation.ExecuteInteraction(caller);
-            // quick click but can't execute — do nothing
         }
         else if (itemCanBePickedUp)
         {
@@ -42,6 +41,10 @@ public class Item_Workstation : Item_Base
         }
     }
 
+    public override void SeconderyInteraction(Transform caller = null)
+    {
+        workstation.ExecuteSecondInteraction(caller);
+    }
 
     protected override void OnItemImpact(Collision collision)
     {
