@@ -30,7 +30,7 @@ public class DeliveryAreaHolder_AllItems : ItemHolder
 
             Item_Base item = col.GetComponentInParent<Item_Base>();
 
-            if (item == null)
+            if (item == null || player.inventory.GetCarriedItems().Contains(item))
                 continue;
 
             if (currentItems.Contains(item) == false)
