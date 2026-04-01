@@ -1,0 +1,26 @@
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+
+public class UI_InGame : MonoBehaviour
+{
+    private UI_CurrentGoal currentGoalUI;
+    public UI_OrderList orderListUI { get; private set; }
+    public UI_InputHelp inputHelp { get; private set; }
+
+
+    private void Awake()
+    {
+        currentGoalUI = GetComponentInChildren<UI_CurrentGoal>(true);
+        orderListUI = GetComponentInChildren<UI_OrderList>();
+        inputHelp = GetComponentInChildren<UI_InputHelp>(true);
+    }
+
+
+    public void UpdateCurrentGoal(string goalText)
+    {
+
+        currentGoalUI.UpdateGoal(goalText);
+    }
+    public void UpdateQuestListUI(List<OrderDataSO> currentOrders) => orderListUI.UpdateOrderList(currentOrders);
+}

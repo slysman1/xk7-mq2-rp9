@@ -1,0 +1,45 @@
+using UnityEngine;
+
+public class Item_MetalBar : Item_Base
+{
+    [SerializeField] private ItemDataSO productionResult;
+
+
+    public ItemDataSO GetProductionResult() => productionResult;
+    public int GetMetalBarValue()
+    {
+        return productionResult.itemPrefab.GetComponent<Item_CoinTemplate>().GetValue();
+    }
+
+    public override void ShowInputUI(bool enable)
+    {
+        if (enable)
+        {
+            Item_Base itemInHand = inventory.GetTopItem();
+
+            if (inventory.CanPickup(this))
+            {
+                if (itemData.pickupType == PickupType.Hold)
+                    inputHelp.AddInput(KeyType.LMB_Hold, "input_pickup_hold");
+                else
+                    inputHelp.AddInput(KeyType.LMB, "input_pickup_click");
+            }
+
+
+            if (itemInHand != null && itemInHand.GetComponent<Tool_Hammer>() != null)
+            {
+                Hammer_ItemCombiner combiner = itemInHand.GetComponent<Hammer_ItemCombiner>();
+
+                if (GetMetalBarValue() < 10)
+                {
+                    if (combiner.CanCombineBars(transform))
+                        inputHelp.AddInput(KeyType.LMB, "input_help_metal_bar_can_combine");
+                    else
+                        inputHelp.AddInput(KeyType.LMB, "input_help_metal_bar_cannot_combine_need_more");
+                }
+            }
+        }
+        else
+            inputHelp.RemoveInput();
+    }
+}
