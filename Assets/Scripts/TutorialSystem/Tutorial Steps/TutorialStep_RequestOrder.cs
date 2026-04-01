@@ -18,14 +18,14 @@ public class TutorialStep_RequestOrder : TutorialStep
 
 
 
-        TutorialIndicator.HighlightAllTargets<Quest_StartButton>();
-        Quest_StartButton.OnQuestRequested += HandleTask;
+        TutorialIndicator.HighlightAllTargets<Order_RequestButton>();
+        Order_RequestButton.OnOrderRequested += HandleTask;
         UpdateCurrentGoalUI();
     }
 
     public override void StopTask()
     {
-        Quest_StartButton.OnQuestRequested -= HandleTask;
+        Order_RequestButton.OnOrderRequested -= HandleTask;
     }
 
     public override void UpdateCurrentGoalUI()

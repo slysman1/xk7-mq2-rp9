@@ -22,5 +22,5 @@ public class UI_InGame : MonoBehaviour
 
         currentGoalUI.UpdateGoal(goalText);
     }
-    public void UpdateQuestListUI(List<OrderDataSO> currentOrders) => orderListUI.UpdateOrderList(currentOrders);
+    public void UpdateOrderListUI(List<OrderDataSO> currentOrders) => orderListUI.UpdateOrderList(currentOrders);
 }

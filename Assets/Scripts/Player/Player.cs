@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
 
 
 
-    private Quest_MainNPC merchantMain;
+    private MainNPC merchantMain;
 
     [Header("Courses")]
     [SerializeField] private bool freeCursor;
@@ -27,7 +27,7 @@ public class Player : MonoBehaviour
         input = new InputSystem_Actions();
         input.Enable();
 
-        merchantMain = FindFirstObjectByType<Quest_MainNPC>();
+        merchantMain = FindFirstObjectByType<MainNPC>();
         EnableControlsPlayer();
 
         input.Player.OpenPauseUI.performed += ctx => UI.instance.OpenPauseUI();

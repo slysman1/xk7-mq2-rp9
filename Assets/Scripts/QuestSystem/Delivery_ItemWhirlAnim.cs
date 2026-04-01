@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Alexdev.TweenUtils;
 
-public class Quest_WhirlAnimation : MonoBehaviour
+public class Delivery_ItemWhirlAnim : MonoBehaviour
 {
-    private Quest_MainNPC questMain;
+    private MainNPC questMain;
 
     [Header("Whirl Settings")]
     [SerializeField] private Transform whirlCenter;
@@ -24,7 +24,7 @@ public class Quest_WhirlAnimation : MonoBehaviour
 
     private void Awake()
     {
-        questMain = GetComponentInParent<Quest_MainNPC>();
+        questMain = GetComponentInParent<MainNPC>();
         whirlDefaultPosition = whirlCenter.position;
     }
 

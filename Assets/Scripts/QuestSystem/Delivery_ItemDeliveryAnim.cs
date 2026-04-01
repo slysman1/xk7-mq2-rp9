@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using static Alexdev.TweenUtils;
 
-public class Quest_ItemDeliveryAnimation : MonoBehaviour
+public class Delivery_ItemDeliveryAnim : MonoBehaviour
 {
     [Header("Item Delivery Sttings")]
     [SerializeField] private float deliverySpeed = 8f;

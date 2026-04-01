@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class Quest_MainNPC : Interaction_Button
+public class MainNPC : Interaction_Button
 {
     
     public static event Action OnDoorKnocked;
@@ -10,7 +10,7 @@ public class Quest_MainNPC : Interaction_Button
     private Player player;
 
     private Quest_WindowAnimation windowAnimation;
-    private Quest_Delivery questDelivery;
+    private Order_DeliveryManager questDelivery;
 
     public DialogueNodeSO dialogueStart;
     public Transform soundSource;
@@ -32,7 +32,7 @@ public class Quest_MainNPC : Interaction_Button
         base.Awake();
 
         windowAnimation = GetComponentInChildren<Quest_WindowAnimation>();
-        questDelivery = GetComponent<Quest_Delivery>();
+        questDelivery = GetComponent<Order_DeliveryManager>();
         UI.OnEnableInGameUI += CloseWindow;
     }
 

@@ -17,7 +17,7 @@ public class TutorialStep_CompleteOrders : TutorialStep
 
         completedOrders = 0;
         OrderManager.OnOrderCompleted += HandleTask;
-        Quest_StartButton.OnQuestRequested += TutorialIndicator.Clear;
+        Order_RequestButton.OnOrderRequested += TutorialIndicator.Clear;
 
         if (waitTillHelpIndicator > 0)
             helpCo = TutorialManager.instance.StartCoroutine(EnableHelpIndicatorIfNeededCo());
@@ -47,7 +47,7 @@ public class TutorialStep_CompleteOrders : TutorialStep
             TutorialManager.instance.StopCoroutine(helpCo);
 
         OrderManager.OnOrderCompleted -= HandleTask;    
-        Quest_StartButton.OnQuestRequested -= TutorialIndicator.Clear;
+        Order_RequestButton.OnOrderRequested -= TutorialIndicator.Clear;
     }
 
     public override void UpdateCurrentGoalUI()
@@ -62,7 +62,7 @@ public class TutorialStep_CompleteOrders : TutorialStep
             yield break;
 
         yield return new WaitForSeconds(waitTillHelpIndicator);
-        TutorialIndicator.HighlightAllTargets<Quest_StartButton>();
+        TutorialIndicator.HighlightAllTargets<Order_RequestButton>();
     }
 
 }

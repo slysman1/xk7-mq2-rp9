@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Quest_Delivery : MonoBehaviour
+public class Order_DeliveryManager : MonoBehaviour
 {
-    private Quest_MainNPC mainNpcBTN;
+    private MainNPC mainNpcBTN;
     private DeliveryAreaHolder_AllItems deliveryArea;
     private Quest_DeliveryFeedback[] deliveryTorchFeedback;
-    private Quest_WhirlAnimation whirlAnimation;
-    private Quest_ItemDeliveryAnimation itemDeliveryAnimation;
+    private Delivery_ItemWhirlAnim whirlAnimation;
+    private Delivery_ItemDeliveryAnim itemDeliveryAnimation;
     private Quest_DoorAnimation doorAnimation;
     private Quest_WindowAnimation windowAnimation;
 
     [Header("Delivery duration")]
-    [SerializeField] private float correctDeliveryDuration = 4f;
-    [SerializeField] private float wrongDeliveryDuration = 1f;
+    [SerializeField] private float correctDeliveryDuration = 2f;
+    [SerializeField] private float wrongDeliveryDuration = .8f;
     [SerializeField] private float perItemDeliveryDelay = 0.3f; // Delay between each item delivery
 
 
@@ -23,12 +23,12 @@ public class Quest_Delivery : MonoBehaviour
 
     private void Awake()
     {
-        mainNpcBTN = GetComponentInChildren<Quest_MainNPC>();
+        mainNpcBTN = GetComponentInChildren<MainNPC>();
         deliveryArea = GetComponentInChildren<DeliveryAreaHolder_AllItems>();
-        whirlAnimation = GetComponentInChildren<Quest_WhirlAnimation>();
+        whirlAnimation = GetComponentInChildren<Delivery_ItemWhirlAnim>();
         doorAnimation = GetComponentInChildren<Quest_DoorAnimation>();
         windowAnimation = GetComponentInChildren<Quest_WindowAnimation>();
-        itemDeliveryAnimation = GetComponentInChildren<Quest_ItemDeliveryAnimation>();
+        itemDeliveryAnimation = GetComponentInChildren<Delivery_ItemDeliveryAnim>();
 
 
         //deliveryTorchFeedback = GetComponentInChildren<Quest_DeliveryFeedback>();

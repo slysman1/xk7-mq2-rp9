@@ -9,7 +9,7 @@ public class TutorialStep_TalkToGuard : TutorialStep
     public override void StartTask()
     {
         base.StartTask();
-        TutorialIndicator.HighlightTarget<Quest_MainNPC>();
+        TutorialIndicator.HighlightTarget<MainNPC>();
 
         UI_DialogueAnswerSlot.OnConversationFinished += HandleTask;
 //        Item_DeliveryBox.OnBoxOpened += HandleTask;

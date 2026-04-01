@@ -22,7 +22,7 @@ public class Item_OrderScroll : Item_Base
         this.orderData = orderData;
     }
 
-    public OrderDataSO GetQuestData() => orderData;
+    public OrderDataSO GetOrderData() => orderData;
 
     public override void OnItemPickup()
     {

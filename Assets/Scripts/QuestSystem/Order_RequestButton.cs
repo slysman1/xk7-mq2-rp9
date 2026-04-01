@@ -4,9 +4,9 @@ using UnityEngine;
 
 using static Alexdev.TweenUtils;
 
-public class Quest_StartButton : Interaction_Button
+public class Order_RequestButton : Interaction_Button
 {
-    public static event Action OnQuestRequested;
+    public static event Action OnOrderRequested;
 
     private DeliveryManager deliveryManager => DeliveryManager.instance;
     private DirtManager dirtManager => DirtManager.instance;
@@ -53,7 +53,7 @@ public class Quest_StartButton : Interaction_Button
         if (tutorialManager.GetTutorialOrder(out OrderDataSO tutorialOrder) != null)
         {
             OrderManager.instance.StartTutorialOrder(tutorialOrder);
-            OnQuestRequested?.Invoke();
+            OnOrderRequested?.Invoke();
             Debug.Log("m creting a tutorial order yo");
             return;
         }
@@ -78,7 +78,7 @@ public class Quest_StartButton : Interaction_Button
         }
 
         OrderManager.instance.StartNewOrderSet();
-        OnQuestRequested?.Invoke();
+        OnOrderRequested?.Invoke();
     }
 
     private IEnumerator RingBellCo()

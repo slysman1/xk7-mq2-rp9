@@ -15,7 +15,6 @@ public class UpgradeDataSO : ScriptableObject
     public UpgradeDataSO requiredUpgrade;
 
     public List<ItemDataSO> equipmentToUnlock;
-    public List<QuestDataSO> onUpgradeQuestDrop;
     public UnlockDecorDataSO[] decorToUnlock;
  
 

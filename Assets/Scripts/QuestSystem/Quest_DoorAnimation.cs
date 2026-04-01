@@ -4,14 +4,14 @@ using static Alexdev.TweenUtils;
 
 public class Quest_DoorAnimation : MonoBehaviour
 {
-    private Quest_MainNPC mainNpc;
+    private MainNPC mainNpc;
 
     [SerializeField] private Vector3 openDoorRot = new Vector3(0, -15, 0);
     [SerializeField] private float closeDoorDuration = .2f;
 
     private void Awake()
     {
-        mainNpc = GetComponentInParent<Quest_MainNPC>();
+        mainNpc = GetComponentInParent<MainNPC>();
     }
 
     public void OpenDoor(float deliveryDuration)

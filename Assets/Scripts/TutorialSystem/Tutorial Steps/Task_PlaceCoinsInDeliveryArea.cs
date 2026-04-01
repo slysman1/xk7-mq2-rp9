@@ -7,7 +7,7 @@ public class Task_PlaceCoinsInDeliveryArea : TutorialStep
 {
     private int amountOfCoinsInDeliveryArea;
     private int neededAmountOfCoinsInDeliveryArea;
-    private Quest_Delivery delivery;
+    private Order_DeliveryManager delivery;
 
     [SerializeField] private ItemDataSO[] allCoinsData;
 
@@ -44,7 +44,7 @@ public class Task_PlaceCoinsInDeliveryArea : TutorialStep
         base.StartTask();
 
         if (delivery == null)
-            delivery = FindFirstObjectByType<Quest_Delivery>();
+            delivery = FindFirstObjectByType<Order_DeliveryManager>();
 
         TutorialIndicator.HighlightTarget<DeliveryAreaHolder_AllItems>();
 

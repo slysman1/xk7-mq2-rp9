@@ -70,7 +70,7 @@ public class OrderManager : MonoBehaviour
 
         // 🔥 RESET PHASE
 
-        if (remainingOrders.Count >= maxConcurrentOrders)
+        if (remainingOrders.Count >= this.maxConcurrentOrders)
             return;
 
         for (int i = 0; i < ordersPerCall; i++)
@@ -198,7 +198,7 @@ public class OrderManager : MonoBehaviour
         if (!trackedOrders.Contains(questToAdd))
             trackedOrders.Add(questToAdd);
 
-        UI.instance.inGameUI.UpdateQuestListUI(trackedOrders);
+        UI.instance.inGameUI.UpdateOrderListUI(trackedOrders);
     }
 
     public void RemoveOrderToObserve(OrderDataSO questToRemove)
@@ -206,7 +206,7 @@ public class OrderManager : MonoBehaviour
         if (trackedOrders.Contains(questToRemove))
             trackedOrders.Remove(questToRemove);
 
-        UI.instance.inGameUI.UpdateQuestListUI(trackedOrders);
+        UI.instance.inGameUI.UpdateOrderListUI(trackedOrders);
     }
 
     public bool HasActiveQuests() => remainingOrders.Count > 0;

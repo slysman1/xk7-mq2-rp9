@@ -16,7 +16,7 @@ public class Task_DeliverOrder : TutorialStep
     {
         base.StartTask();
         OrderManager.OnOrderCompleted += HandleTask;
-        TutorialIndicator.HighlightTarget<Quest_Delivery>();
+        TutorialIndicator.HighlightTarget<Order_DeliveryManager>();
 
         //if (highlightDeliveryDoor)
         //    FindFirstObjectByType<Quest_DeliveryButton>().Highlight(true);

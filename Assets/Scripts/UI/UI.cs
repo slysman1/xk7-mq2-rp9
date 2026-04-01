@@ -61,7 +61,7 @@ public class UI : MonoBehaviour
         };
 
         player.input.UI.OpenMerchant.performed += ctx => OpenShopUI();
-        Quest_MainNPC.OnDoorKnocked += OpenDialogueUI;
+        MainNPC.OnDoorKnocked += OpenDialogueUI;
 
         OpenInGameUI();
     }

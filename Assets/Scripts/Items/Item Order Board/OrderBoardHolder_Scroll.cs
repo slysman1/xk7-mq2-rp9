@@ -27,7 +27,7 @@ public class OrderBoardHolder_Scroll : ItemHolder, IHighlightable
         orderScroll.EnableFoldedScroll(false);
 
         Audio.PlaySFX("scroll_attached_to_board", transform);
-        orderManager.AddOrderToObserver(orderScroll.GetQuestData());
+        orderManager.AddOrderToObserver(orderScroll.GetOrderData());
         OnScrollAttached?.Invoke();
     }
 
@@ -37,14 +37,14 @@ public class OrderBoardHolder_Scroll : ItemHolder, IHighlightable
         base.OnItemRemoved(item);
 
         Item_OrderScroll orderScroll = item as Item_OrderScroll;
-        orderManager.RemoveOrderToObserve(orderScroll.GetQuestData());
+        orderManager.RemoveOrderToObserve(orderScroll.GetOrderData());
     }
 
     public void RemoveOrder(OrderDataSO quest)
     {
         var scroll = currentItems
             .OfType<Item_OrderScroll>()
-            .FirstOrDefault(s => s.GetQuestData() == quest);
+            .FirstOrDefault(s => s.GetOrderData() == quest);
 
         if (scroll == null)
             return;

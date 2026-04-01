@@ -6,14 +6,14 @@ public class TutorialStep_TalkToGuard_ReportDelivery : TutorialStep_TalkToGuard
 {
     [SerializeField] private TutorialStep fallBackAcceptOrder;
     [SerializeField] private TutorialStep fallBackPlaceCoinsInArea;
-    private Quest_Delivery delivery;
+    private Order_DeliveryManager delivery;
     private OrderManager orderManager;
     private bool canDoFallBack;
 
     public override void StartTask()
     {
         //canDoFallBack = true;
-        delivery = FindFirstObjectByType<Quest_Delivery>();
+        delivery = FindFirstObjectByType<Order_DeliveryManager>();
         orderManager = OrderManager.instance;
 
         //Quest_MainNPC.OnDoorKnocked += StopFallBack;
@@ -27,7 +27,7 @@ public class TutorialStep_TalkToGuard_ReportDelivery : TutorialStep_TalkToGuard
 
 
         TutorialIndicator.Clear();
-        TutorialIndicator.HighlightTarget<Quest_MainNPC>();
+        TutorialIndicator.HighlightTarget<MainNPC>();
 
         UpdateCurrentGoalUI();
         OrderManager.OnOrderCompleted += HandleTask;
@@ -51,7 +51,7 @@ public class TutorialStep_TalkToGuard_ReportDelivery : TutorialStep_TalkToGuard
         base.Update();
 
         if (delivery == null)
-            delivery = FindFirstObjectByType<Quest_Delivery>();
+            delivery = FindFirstObjectByType<Order_DeliveryManager>();
 
         if (orderManager == null)
             orderManager = OrderManager.instance;
