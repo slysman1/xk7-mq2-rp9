@@ -40,6 +40,9 @@ public class Player_Highlighter : MonoBehaviour
         }
 
         ClearHighlight();
+        if (hit.collider == null)
+            return;
+
         currentHighlight = hit.collider.GetComponentInParent<IHighlightable>();
         currentHighlight?.Highlight(true);
     }
@@ -69,10 +72,19 @@ public class Player_Highlighter : MonoBehaviour
 
     private bool ShouldClearHighlightEarly(RaycastHit hit)
     {
+        if (hit.collider == null)
+            return false;
+
         Item_Base detectedItem = hit.collider.GetComponent<Item_Base>();
         Item_Base itemInHand = player.inventory.GetTopItem();
 
         if (detectedItem == null || itemInHand == null)
+            return false;
+
+        if (detectedItem.itemData == null)
+            return false;
+
+        if(itemInHand.itemData == null)
             return false;
 
         if (itemInHand is Item_Tool toolInHand)
@@ -80,10 +92,6 @@ public class Player_Highlighter : MonoBehaviour
             if (toolInHand.CanInteractWith(detectedItem.itemData))
                 return false;
         }
-
-
-        //if (detectedItem.HasInteractions())
-        //    return false;
 
         if (detectedItem.CanStackWith(itemInHand, player.inventory.GetCarriedItems().Count))
             return false;

@@ -9,17 +9,13 @@ public class Task_PlaceCoinsInDeliveryArea : TutorialStep
     private int neededAmountOfCoinsInDeliveryArea;
     private Order_DeliveryManager delivery;
 
-    [SerializeField] private ItemDataSO[] allCoinsData;
-
     public void HandleTask(List<Item_Base> itemsInDeliveryArea)
     {
         int coinsInDeliveryArea = 0;
-
         foreach (var item in itemsInDeliveryArea)
         {
-            foreach(var data in allCoinsData)
-                if(data == item.itemData)
-                    coinsInDeliveryArea++;
+            if (item is Item_Coin)
+                coinsInDeliveryArea++;
         }
 
         amountOfCoinsInDeliveryArea = coinsInDeliveryArea;

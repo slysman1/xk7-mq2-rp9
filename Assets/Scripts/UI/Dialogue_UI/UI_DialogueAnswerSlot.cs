@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class UI_DialogueAnswerSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnterHandler
+public class UI_DialogueAnswerSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public static event Action<DialogueNodeSO> DialogeChoiceConfirmed;
     public static event Action OnDeliveryConfirmed;
@@ -128,5 +128,15 @@ public class UI_DialogueAnswerSlot : MonoBehaviour, ISelectHandler, IDeselectHan
     public void OnPointerEnter(PointerEventData eventData)
     {
         EventSystem.current.SetSelectedGameObject(gameObject);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (EventSystem.current.currentSelectedGameObject == gameObject)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            ColorAsSelected(false);
+        }
+
     }
 }

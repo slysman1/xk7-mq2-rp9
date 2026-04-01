@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: ColorConfig
   m_EditorClassIdentifier: Assembly-CSharp::ColorConfigSO
   outlineWidth: 3.5
-  outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  outlineColor: {r: 0.56078434, g: 0.5921569, b: 1, a: 1}
   hotEmissionColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   hotEmissionIntensity: 2.5
+  coldEmissionIntensity: 0.01
   emissionA: {r: 0, g: 0, b: 0, a: 1}
   emissionB: {r: 0.17254902, g: 0.16078432, b: 0.078431375, a: 1}
   cycleDuration: 2

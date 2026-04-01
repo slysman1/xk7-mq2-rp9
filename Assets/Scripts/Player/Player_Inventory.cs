@@ -212,8 +212,6 @@ public class Player_Inventory : MonoBehaviour
         if (item.currentItemHolder == null)
             item.OnItemDrop();
         
-        
-        //item.EnableInteraction(true,interactionDelay);
 
         if (carriedItems.Count == 0)
             weightInHands = ItemWeightType.None;

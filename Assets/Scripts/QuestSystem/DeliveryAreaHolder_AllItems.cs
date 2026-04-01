@@ -7,6 +7,7 @@ public class DeliveryAreaHolder_AllItems : ItemHolder
 {
     public static event Action<List<Item_Base>> OnCoinAmountChanged;
 
+    [SerializeField] private Transform placementPoint;
     [SerializeField] private BoxCollider checkArea; // assign a box collider (set to trigger)
 
 
@@ -48,6 +49,7 @@ public class DeliveryAreaHolder_AllItems : ItemHolder
 
     protected override void OnItemAdded(Item_Base item) 
     {
+        //item.transform.position = placementPoint.position;
         item.SetItemHolder(this);
         item.EnableCamPriority(false);
         item.Highlight(false);
@@ -64,5 +66,10 @@ public class DeliveryAreaHolder_AllItems : ItemHolder
     public override bool ItemCanBePlaced(Item_Base item)
     {
         return true;
+    }
+
+    public override Vector3 GetPlacementPosition()
+    {
+        return placementPoint.position;
     }
 }

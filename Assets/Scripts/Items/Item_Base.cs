@@ -317,7 +317,7 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
     private IEnumerator PauseColliderCo(float pauseDuration = 0)
     {
         EnableCollider(false);
-        yield return pauseDuration;
+        yield return new WaitForSeconds(pauseDuration);
 
         EnableCollider(true);
     }

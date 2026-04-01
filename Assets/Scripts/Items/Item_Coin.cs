@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using static Alexdev.TweenUtils;
 
 public class Item_Coin : Item_Base, IInteractable
 {
@@ -33,15 +34,19 @@ public class Item_Coin : Item_Base, IInteractable
 
     
 
-    public void PlayFeedback(Vector3 velocity, float rotation)
+    public void OnStampFeedback(Vector3 feedbackVelocity, float minTorque, float maxTorque)
     {
-        rb.linearVelocity = velocity;
-        rb.AddTorque(new Vector3(0, 0, rotation), ForceMode.VelocityChange);
+        Vector3 velocity = GetWorldVelocity(feedbackVelocity);
+        float torq = Random.Range(minTorque, maxTorque);
 
-        GameObject newVfx = Instantiate(onStampVfx, transform.position, Quaternion.identity);//,transform);
-        //Audio.PlaySFX("coin_stamp", transform.position);
-        //if(sfx != null) 
-        //    sfx.Play();
+        if (Physics.CheckSphere(transform.position, 0.05f))
+            transform.position += Vector3.up * 0.05f; // nudge up slightly
+
+
+        rb.linearVelocity = velocity;
+        rb.AddTorque(new Vector3(0, 0, torq), ForceMode.VelocityChange);
+
+        GameObject newVfx = Instantiate(onStampVfx, transform.position, Quaternion.identity);
     }
 
     public void EnableStamps(bool enable = true)

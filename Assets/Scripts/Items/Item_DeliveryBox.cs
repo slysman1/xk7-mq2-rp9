@@ -39,6 +39,8 @@ public class Item_DeliveryBox : Item_Base
             isFirstrSound = false;
             return;
         }
+
+
             
         bool isMetal = collision.transform.GetComponent<MetalIdentifier>() != null;
 
@@ -50,18 +52,24 @@ public class Item_DeliveryBox : Item_Base
 
 
 
-    public override void Interact(Transform carryPoint)
+    public override void Interact(Transform caller)
     {
-        base.Interact(carryPoint);
-
         if (particle != null)
         {
             particle.transform.parent = null;
             particle.gameObject.SetActive(true); // enable particle system
         }
 
-        Unpack();
-        GetComponent<BoxCollider>().enabled = false; // disable collider to prevent further interactions
+
+        if (player.interaction.QuickPressLMB())
+        {
+            Unpack();
+        }
+        else if (itemCanBePickedUp)
+        {
+            base.Interact(caller); // hold — pickup
+        }
+
     }
 
     public void SetupBox(List<GameObject> items)
@@ -111,6 +119,7 @@ public class Item_DeliveryBox : Item_Base
     {
 
         OnBoxOpened?.Invoke();
+        EnableCollider(false);
         UI.instance.taskIndicator.RemoveTarget(transform);
         Audio.PlaySFX("deliveryBox_open", transform);
 
