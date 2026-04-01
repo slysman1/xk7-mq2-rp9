@@ -14,9 +14,6 @@ public class TutorialStep_TalkToGuard : TutorialStep
         UI_DialogueAnswerSlot.OnConversationFinished += HandleTask;
 //        Item_DeliveryBox.OnBoxOpened += HandleTask;
 
-        if (dialogueToStartNext != null)
-            DialogueManager.instance.SetPriorityDialogue(dialogueToStartNext);
-
         UpdateCurrentGoalUI();
     }
 

@@ -31,8 +31,7 @@ public class TutorialStep_OpenDeliveryBox : TutorialStep
         Item_DeliveryBox.OnBoxOpened += HandleTask;
         TutorialIndicator.HighlightTarget<Item_DeliveryBox>();
 
-        if(dialogueToStartNext != null)
-            DialogueManager.instance.SetPriorityDialogue(dialogueToStartNext);
+
     }
 
     public override void StopTask()

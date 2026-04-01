@@ -11,9 +11,9 @@ public class TutorialManager : MonoBehaviour
     private TutorialStep previousStep;
     private bool isInFallback;
 
-    public TutorialStep currentTask;
-    [SerializeField] private TutorialStep[] tutorialTasks;
-    private int currentTaskIndex;
+    public TutorialStep currentStep;
+    [SerializeField] private TutorialSequenceSO tutorial;
+    private int stepIndex;
     public int startingQuest;
 
     [Space]
@@ -32,7 +32,7 @@ public class TutorialManager : MonoBehaviour
 
     private IEnumerator Start()
     {
-        currentTaskIndex = startingQuest;
+        stepIndex = startingQuest;
         yield return null;
         StartNextTutorialStep();
         //InvokeRepeating(nameof(UpdateCurrentTaskGoalText), 0, .1f);
@@ -41,14 +41,14 @@ public class TutorialManager : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.K))
-            OnTaskCompleted(currentTask);
+            OnTaskCompleted(currentStep);
 
         //currentTask?.Update();
     }
 
     private void StartNextTutorialStep()
     {
-        if (currentTaskIndex >= tutorialTasks.Length)
+        if (stepIndex >= tutorial.steps.Length)
         {
             UI.instance.inGameUI.UpdateCurrentGoal("");
             return;
@@ -62,14 +62,14 @@ public class TutorialManager : MonoBehaviour
 
         yield return new WaitForSeconds(.5f);
 
-        currentTask = tutorialTasks[currentTaskIndex];
-        currentTaskIndex = currentTaskIndex + 1;
+        currentStep = tutorial.steps[stepIndex];
+        stepIndex = stepIndex + 1;
 
-        currentTask.OnCompleted += OnTaskCompleted;
-        CreateItems(currentTask.startingItems);
+        currentStep.OnCompleted += OnTaskCompleted;
+        CreateItems(currentStep.startingItems);
 
         yield return null;
-        currentTask.StartTask();
+        currentStep.StartTask();
     }
 
     private void OnTaskCompleted(TutorialStep tutorialStep)
@@ -121,26 +121,26 @@ public class TutorialManager : MonoBehaviour
             return;
 
         // Already running → ignore
-        if (currentTask == fallbackStep)
+        if (currentStep == fallbackStep)
             return;
 
         // Save current
-        if (currentTask != null)
+        if (currentStep != null)
         {
-            currentTask.OnCompleted -= OnTaskCompleted;
-            currentTask.StopTask();
+            currentStep.OnCompleted -= OnTaskCompleted;
+            currentStep.StopTask();
 
-            previousStep = currentTask;
+            previousStep = currentStep;
         }
 
         isInFallback = true;
 
         // Start fallback
-        currentTask = fallbackStep;
+        currentStep = fallbackStep;
 
-        currentTask.OnCompleted += OnFallbackCompleted;
-        CreateItems(currentTask.startingItems);
-        currentTask.StartTask();
+        currentStep.OnCompleted += OnFallbackCompleted;
+        CreateItems(currentStep.startingItems);
+        currentStep.StartTask();
     }
     private void OnFallbackCompleted(TutorialStep step)
     {
@@ -154,11 +154,11 @@ public class TutorialManager : MonoBehaviour
         // Return to previous
         if (previousStep != null)
         {
-            currentTask = previousStep;
+            currentStep = previousStep;
             previousStep = null;
 
-            currentTask.OnCompleted += OnTaskCompleted;
-            currentTask.StartTask();
+            currentStep.OnCompleted += OnTaskCompleted;
+            currentStep.StartTask();
         }
         else
         {

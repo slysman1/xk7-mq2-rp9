@@ -28,9 +28,6 @@ public class TutorialStep_CleanDirt : TutorialStep
         TutorialIndicator.HighlightAllTargets<Item_DirtSpot>();
 
 
-        if (dialogueToStartNext != null)
-            DialogueManager.instance.SetPriorityDialogue(dialogueToStartNext);
-
         UpdateCurrentGoalUI();
     }
 

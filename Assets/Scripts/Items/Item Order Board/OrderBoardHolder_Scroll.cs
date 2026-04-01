@@ -6,9 +6,11 @@ using UnityEngine;
 
 public class OrderBoardHolder_Scroll : ItemHolder, IHighlightable
 {
-    private OrderManager orderManager => OrderManager.instance;
-    public static event Action OnScrollAttached;
+    public static event Action<OrderDataSO> OnScrollAdded;
+    public static event Action<OrderDataSO> OnScrollRemoved;
+
     private List<OrderBoardHolder_ScrollSlot> slots;
+  
     
 
     protected override void Awake()
@@ -27,18 +29,16 @@ public class OrderBoardHolder_Scroll : ItemHolder, IHighlightable
         orderScroll.EnableFoldedScroll(false);
 
         Audio.PlaySFX("scroll_attached_to_board", transform);
-        orderManager.AddOrderToObserver(orderScroll.GetOrderData());
-        OnScrollAttached?.Invoke();
+        OnScrollAdded?.Invoke(orderScroll.GetOrderData());
     }
-
 
     protected override void OnItemRemoved(Item_Base item)
     {
         base.OnItemRemoved(item);
-
         Item_OrderScroll orderScroll = item as Item_OrderScroll;
-        orderManager.RemoveOrderToObserve(orderScroll.GetOrderData());
+        OnScrollRemoved?.Invoke(orderScroll.GetOrderData());
     }
+
 
     public void RemoveOrder(OrderDataSO quest)
     {

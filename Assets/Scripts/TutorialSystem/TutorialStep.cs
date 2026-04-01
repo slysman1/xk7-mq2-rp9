@@ -35,5 +35,4 @@ public abstract class TutorialStep : ScriptableObject
 
     public abstract void UpdateCurrentGoalUI();
 
-    public virtual void Update() { }
 }

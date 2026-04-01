@@ -35,11 +35,6 @@ public class TutorialStep_CompleteOrders : TutorialStep
             Complete();
     }
 
-    protected override void Complete()
-    {
-        base.Complete();
-        DialogueManager.instance.SetPriorityDialogue(null);
-    }
 
     public override void StopTask()
     {

@@ -1,50 +1,42 @@
 using UnityEngine;
 
-
 [CreateAssetMenu(menuName = "Tutorial/Tutorial Step/Accept Order", fileName = "Tutorial Step - Accept Order")]
-
-
 public class TutorialStep_AcceptOrder : TutorialStep
 {
-    private bool scrollAttachedToBoard;
+    private System.Action<OrderDataSO> onScrollAdded;
 
     public override void HandleTask()
     {
-        scrollAttachedToBoard = true;
-        UpdateCurrentGoalUI();
-
-        if (scrollAttachedToBoard)
-            Complete();
+        Complete();
     }
 
     public override void StartTask()
     {
         base.StartTask();
 
-        if(OrderManager.instance.trackedOrders.Count > 0)
+        if (OrderManager.instance.trackedOrders.Count > 0)
+        {
             Complete();
-        
+            return;
+        }
 
-        scrollAttachedToBoard = false;
-        OrderBoardHolder_Scroll.OnScrollAttached += HandleTask;
+        onScrollAdded = _ => HandleTask();
+        OrderBoardHolder_Scroll.OnScrollAdded += onScrollAdded;
 
         TutorialIndicator.HighlightTarget<Item_OrderScroll>();
         TutorialIndicator.HighlightTarget<OrderBoardHolder_Scroll>();
+        TutorialIndicator.HighlightAllTargets<Item_DeliveryBox>();
 
         UpdateCurrentGoalUI();
-
-        TutorialIndicator.HighlightAllTargets<Item_DeliveryBox>();
     }
 
     public override void StopTask()
     {
-        OrderBoardHolder_Scroll.OnScrollAttached -= HandleTask;
+        OrderBoardHolder_Scroll.OnScrollAdded -= onScrollAdded;
     }
 
     public override void UpdateCurrentGoalUI()
     {
-        string text = Localization.GetString("tutorial_step_accept_order");
-        UI.instance.inGameUI.UpdateCurrentGoal(text);
+        UI.instance.inGameUI.UpdateCurrentGoal(Localization.GetString("tutorial_step_accept_order"));
     }
-
 }

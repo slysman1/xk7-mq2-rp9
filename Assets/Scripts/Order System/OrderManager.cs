@@ -31,6 +31,8 @@ public class OrderManager : MonoBehaviour
     {
         instance = this;
 
+        OrderBoardHolder_Scroll.OnScrollAdded += AddOrder;
+        OrderBoardHolder_Scroll.OnScrollRemoved += RemoveOrder;
         //CollectData();
     }
 
@@ -193,7 +195,7 @@ public class OrderManager : MonoBehaviour
         DeliveryManager.instance.CreateDeliveryBox(questItems, extraItems);
     }
 
-    public void AddOrderToObserver(OrderDataSO questToAdd)
+    public void AddOrder(OrderDataSO questToAdd)
     {
         if (!trackedOrders.Contains(questToAdd))
             trackedOrders.Add(questToAdd);
@@ -201,7 +203,7 @@ public class OrderManager : MonoBehaviour
         UI.instance.inGameUI.UpdateOrderListUI(trackedOrders);
     }
 
-    public void RemoveOrderToObserve(OrderDataSO questToRemove)
+    public void RemoveOrder(OrderDataSO questToRemove)
     {
         if (trackedOrders.Contains(questToRemove))
             trackedOrders.Remove(questToRemove);
