@@ -165,6 +165,15 @@ public class Player_PreviewHandler : MonoBehaviour
         if (isPlacingItem == false)
             return;
 
+        if (snapToHolderCo != null)
+        {
+            StopCoroutine(snapToHolderCo);
+            snapToHolderCo = null;
+        }
+
+        isSnapedToHolder = false; // ← also explicitly reset this
+
+
         itemBeingPlaced.EnableCamPriority(true);
         itemBeingPlaced.transform.parent = inventory.GetCarryPoint();
         itemBeingPlaced.transform.localPosition = originalLocalPosition;

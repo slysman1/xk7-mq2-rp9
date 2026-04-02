@@ -14,7 +14,7 @@ public class WallTorch_TorchHolder : ItemHolder
     protected override void OnItemAdded(Item_Base item)
     {
         base.OnItemAdded(item);
-
+        item.EnableDefaultLayer();
         Audio.PlaySFX("plate_added", transform);
         Tool_Fire fire = item.GetComponent<Tool_Fire>();
 
