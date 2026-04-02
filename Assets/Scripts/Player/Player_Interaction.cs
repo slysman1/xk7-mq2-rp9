@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player_Interaction : MonoBehaviour
 {
-    public event Action OnReleasedLMB;
+    public static event Action OnReleasedLMB;
 
     private Player player;
     private Player_Inventory inventory;

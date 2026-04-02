@@ -13,7 +13,6 @@ public class TutorialStep_StoreCoins : TutorialStep
     [SerializeField] private ItemDataSO itemStorageData;
     [SerializeField] private int targetAmount = 1;
     private int coinsInStorageAmount;
-    private int totalCoins;
 
 
     public override void StartTask()
@@ -43,7 +42,6 @@ public class TutorialStep_StoreCoins : TutorialStep
         TutorialIndicator.HighlightTargetList(coinTransforms);
 
         coinsInStorageAmount = coinStorage.coinHolder.GetCoinList().Count;
-        targetAmount = avalibleCoinsList.Count;
 
         if (avalibleCoinsList.Count == 0 && coinStorage.coinHolder.currentItems.Count > 0)
         {

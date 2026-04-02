@@ -128,8 +128,9 @@ public class Workstation_CoinCut : Workstation
                 Vector3 velocity = usedTemplateDirection.forward * removeForwardVelocity + usedTemplateDirection.up * removeUpVelocity;
                 currentTemplate.EnableKinematic(false);
                 currentTemplate.SetVelocity(velocity);
-                currentTemplate.transform.parent = null;
                 currentTemplate.SetCanPickUpTo(true);
+                currentTemplate.EnableCollider(true);
+                currentTemplate.transform.parent = null;
                 currentTemplate = null;
                 coinIndex = 0;
             }

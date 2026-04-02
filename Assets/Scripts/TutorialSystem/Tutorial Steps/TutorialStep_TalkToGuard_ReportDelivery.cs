@@ -5,6 +5,7 @@ using UnityEngine;
     fileName = "Tutorial Step - Talk To Guard - Report Delivery")]
 public class TutorialStep_TalkToGuard_ReportDelivery : TutorialStep_TalkToGuard
 {
+    [SerializeField] private DialogueNodeSO incorrectDeliveryDialogue;
     private Order_DeliveryManager delivery;
     private int neededCoins;
     private System.Action<OrderDataSO> onScrollAdded;
@@ -12,7 +13,13 @@ public class TutorialStep_TalkToGuard_ReportDelivery : TutorialStep_TalkToGuard
 
     public override void StartTask()
     {
-        base.StartTask();
+        TutorialIndicator.Clear();
+
+        if(orderToStartNext != null)
+            TutorialManager.instance.SetTutorialOrder(orderToStartNext);
+
+        if(dialogueToStartNext != null)
+            DialogueManager.instance.SetPriorityDialogue(dialogueToStartNext);
 
         delivery = FindFirstObjectByType<Order_DeliveryManager>();
         neededCoins = OrderManager.instance.trackedOrders[0].orderOutput[0].quantity;
@@ -24,6 +31,7 @@ public class TutorialStep_TalkToGuard_ReportDelivery : TutorialStep_TalkToGuard
         OrderBoardHolder_Scroll.OnScrollRemoved += onScrollRemoved;
         DeliveryAreaHolder_AllItems.OnCoinAmountChanged += OnCoinAmountChanged;
         OrderManager.OnOrderCompleted += HandleTask;
+        Order_DeliveryManager.OnDeliveryFailed += OnDeliveryFailed;
 
         CheckConditions();
     }
@@ -78,5 +86,15 @@ public class TutorialStep_TalkToGuard_ReportDelivery : TutorialStep_TalkToGuard
         OrderBoardHolder_Scroll.OnScrollRemoved -= onScrollRemoved;
         DeliveryAreaHolder_AllItems.OnCoinAmountChanged -= OnCoinAmountChanged;
         OrderManager.OnOrderCompleted -= HandleTask;
+        Order_DeliveryManager.OnDeliveryFailed -= OnDeliveryFailed;
+    }
+
+    private void OnDeliveryFailed()
+    {
+        if (incorrectDeliveryDialogue == null) return;
+
+        int needed = neededCoins;
+        
+        DialogueManager.instance.SetPriorityDialogue(incorrectDeliveryDialogue);
     }
 }

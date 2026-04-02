@@ -1,9 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Order_DeliveryManager : MonoBehaviour
 {
+
+    public static event Action OnDeliveryFailed;
+
+
     private MainNPC mainNpcBTN;
     private DeliveryAreaHolder_AllItems deliveryArea;
     private Quest_DeliveryFeedback[] deliveryTorchFeedback;
@@ -85,6 +90,9 @@ public class Order_DeliveryManager : MonoBehaviour
         if (hasCorrectDelivery)
             CompleteQuestDelivery(questToDeliver);
 
+
+        if (!hasCorrectDelivery)
+            OnDeliveryFailed?.Invoke();
 
         Audio.QueSFX(deliveryFeedbackSFX, mainNpcBTN.soundSource, delaySFX);
         yield return doorAnimation.CloseDoorCo(hasCorrectDelivery);

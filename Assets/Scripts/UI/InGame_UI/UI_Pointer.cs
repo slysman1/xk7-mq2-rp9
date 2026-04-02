@@ -4,24 +4,16 @@ using UnityEngine.UI;
 
 public class UI_Pointer : MonoBehaviour
 {
-    private UI ui;
-    private Player_Interaction interaction;
 
     [SerializeField] private Image fillPointer;
     private Coroutine fillCo;
 
     private void Awake()
     {
-        interaction = FindFirstObjectByType<Player_Interaction>();
-    }
-
-    private void Start()
-    {
-        ui = GetComponentInParent<UI>();
-        interaction.OnReleasedLMB += CancelFill; // Cancel fill when player releases LMB
-
+        Player_Interaction.OnReleasedLMB += CancelFill; // Cancel fill when player releases LMB
         CancelFill();
     }
+
 
     public void BeginToFeelPointer(float duration)
     {

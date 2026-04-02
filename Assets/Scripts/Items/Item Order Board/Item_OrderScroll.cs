@@ -43,4 +43,9 @@ public class Item_OrderScroll : Item_Base
         unfoldedScroll.SetActive(!enable);
     }
 
+    public override void EnableAsItWereInHolder(bool display)
+    {
+        base.EnableAsItWereInHolder(display);
+        EnableFoldedScroll(!display);
+    }
 }

@@ -495,22 +495,22 @@ public class Player_PreviewHandler : MonoBehaviour
             0.1f, 0.2f
         ));
 
-        itemBeingPlaced.DisplayItemAsInHolder(true);
+        if (itemBeingPlaced == null)
+            yield break;
+
+        itemBeingPlaced.EnableAsItWereInHolder(true);
     }
 
     private IEnumerator ReturnItemToPreview()
     {
-        itemBeingPlaced.DisplayItemAsInHolder(false);
-     //   itemBeingPlaced.EnableCamPriority(true);
-
-        Vector3 returnTarget = GetPreviewPosition();
+     
+        itemBeingPlaced.EnableAsItWereInHolder(false);
 
         yield return StartCoroutine(ArcMoveToVector(
             itemBeingPlaced.transform,
-            returnTarget,
+            GetPreviewPosition(),
             0.1f, 0.2f
         ));
-
     }
 
     private Vector3 GetVFXPosition()

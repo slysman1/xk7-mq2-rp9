@@ -353,7 +353,7 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
         return Vector3.Angle(transform.up, Vector3.up) < 5f; // tolerance in degrees
     }
 
-    public void DisplayItemAsInHolder(bool display)
+    public virtual void EnableAsItWereInHolder(bool display)
     {
         EnableCamPriority(!display);
     }
