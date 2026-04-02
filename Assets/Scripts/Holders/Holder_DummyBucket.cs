@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class Holder_DummyBucket : ItemHolder
 {
-    public event Action OnItemAmountChanged;
-
+  
     [Header("Dummy Bucket Details")]
     [SerializeField] private Transform extraCollider;
     private DummyBucket_Slot bucketSlot;
@@ -28,7 +27,6 @@ public class Holder_DummyBucket : ItemHolder
         bucket.EnableHappyFace(true);
 
         extraCollider.gameObject.SetActive(false);
-        OnItemAmountChanged?.Invoke();
     }
 
     protected override void OnItemRemoved(Item_Base item)
@@ -39,7 +37,6 @@ public class Holder_DummyBucket : ItemHolder
         bucket.EnableHappyFace(false);
 
         extraCollider.gameObject.SetActive(true);
-        OnItemAmountChanged?.Invoke();
     }
 
 

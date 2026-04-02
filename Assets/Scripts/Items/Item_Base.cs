@@ -16,7 +16,8 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
     public event Action OnItemPickedUp;
     public event Action OnItemDroppedEvent;
 
-    public Object_Outline outline { get; private set; }
+    
+    protected Object_Outline[] outlines;
     public HeatEmission heatHandler { get; private set; }
     public Rigidbody rb { get; private set; }
     protected Collider[] colliders;
@@ -64,7 +65,7 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
 
     protected virtual void Awake()
     {
-        outline = GetComponent<Object_Outline>();
+        
         rb = GetComponentInChildren<Rigidbody>();
         colliders = GetComponentsInChildren<Collider>();
         mesh = GetComponentInChildren<MeshFilter>(true).mesh;
@@ -74,6 +75,7 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
 
         CacheOriginalLayers();
         CacheMeshConvexState();
+        CacheOutlines();
     }
 
 
@@ -187,23 +189,23 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
     }
     public virtual void Highlight(bool enable)
     {
-
         ShowInputUI(enable);
 
-        if (outline == null)
+        if (outlines == null || outlines.Length == 0)
             return;
 
         if (enable && blockOutline)
         {
-            outline.EnableOutline(OutlineType.None);
+            foreach (var o in outlines)
+                o.EnableOutline(OutlineType.None);
             return;
         }
-
 
         if (enable)
             OnItemHighlighted?.Invoke();
 
-        outline.EnableOutline(enable ? OutlineType.Highlight : OutlineType.None);
+        foreach (var o in outlines)
+            o.EnableOutline(enable ? OutlineType.Highlight : OutlineType.None);
     }
 
     protected virtual void OnCollisionEnter(Collision collision)
@@ -304,7 +306,10 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
 
 
 
-
+    protected void CacheOutlines()
+    {
+        outlines = GetComponentsInChildren<Object_Outline>(true);
+    }
 
     private void CacheMeshConvexState()
     {

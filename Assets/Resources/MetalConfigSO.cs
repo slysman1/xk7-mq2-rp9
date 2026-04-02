@@ -7,4 +7,7 @@ public class MetalConfigSO : ScriptableObject
     public ItemDataSO[] copperItems;
     public ItemDataSO[] silverItems;
     public ItemDataSO[] goldItems;
+
+    [Space]
+    public ItemDataSO[] allCoinsData;
 }

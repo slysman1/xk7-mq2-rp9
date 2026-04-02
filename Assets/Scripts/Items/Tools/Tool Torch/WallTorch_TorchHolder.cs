@@ -1,24 +1,24 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class WallTorch_TorchHolder : ItemHolder
 {
-    private Holder_TorchSlot slot;
+    private List<Holder_TorchSlot> slots;
 
     protected override void Awake()
     {
         base.Awake();
-
-        slot = GetComponentInChildren<Holder_TorchSlot>();
+        slots = SetupSlots<Holder_TorchSlot>();
     }
 
     protected override void OnItemAdded(Item_Base item)
     {
-        Audio.PlaySFX("plate_added", transform);
+        base.OnItemAdded(item);
 
-        item.SetItemHolder(this);
-        item.EnableKinematic(true);
-        item.transform.parent = transform.parent;
-        item.transform.position = slot.transform.position;
-        item.transform.rotation = slot.transform.rotation;
+        Audio.PlaySFX("plate_added", transform);
+        Tool_Fire fire = item.GetComponent<Tool_Fire>();
+
+        fire?.EnableFire(true);
+        
     }
 }

@@ -13,23 +13,17 @@ public class CurrencyManager : MonoBehaviour
     [SerializeField] private int currentCredit;
     [SerializeField] private int currentRespect;
 
-    [Header("Coin Value Details")]
-    [SerializeField] private Item_Coin copperCoin;
-    [SerializeField] private Item_Coin silverCoin;
-    [SerializeField] private Item_Coin goldenCoin;
+
 
     private void Awake()
     {
         instance = this;
-        StorageHolder_Coin.OnCoinAdded += AddCurrency;
-        StorageHolder_Coin.OnCoinRemoved += RemoveCurrency;
     }
-
     private IEnumerator Start()
     {
         yield return null;
         AddCurrency(0);
-        AddRespect(0);
+        AddFavour(0);
     }
 
     private void Update()
@@ -38,18 +32,18 @@ public class CurrencyManager : MonoBehaviour
             AddCurrency(1);
 
         if(Input.GetKeyDown(KeyCode.F5))
-            AddRespect(1);
+            AddFavour(1);
     }
 
     public void Pay(int totalCost, out List<GameObject> change)
     {
-        List<StorageHolder_Coin> storages = FindObjectsByType<StorageHolder_Coin>(FindObjectsSortMode.None).ToList();
+        List<StorageHolder_Coin> coinHolders = FindAllStorages();
+
         List<Item_Coin> coinsToUse = new();
-        //Dictionary<Item_Coin, ItemHolder> coinsToReturn = new();
         int remaining = totalCost;
 
         // Step 1: Collect coins from all storages
-        foreach (var storage in storages)
+        foreach (var storage in coinHolders)
         {
             List<Item_Coin> coinList = storage.GetCoinList();
 
@@ -70,46 +64,56 @@ public class CurrencyManager : MonoBehaviour
         int paidAmount = coinsToUse.Sum(c => c.GetCoinValue());
         int changeAmount = paidAmount - totalCost;
 
+
         // Step 3: Remove coins from storages
         foreach (var coin in coinsToUse)
         {
             if (coin.GetItemHolder() is StorageHolder_Coin storage)
-                storage.RemoveItem(coin,true);
+                storage.RemoveItem(coin, true);
         }
 
         // Step 4: Generate change
         change = GenerateChangeCoins(changeAmount);
     }
 
+    private  List<StorageHolder_Coin> FindAllStorages()
+    {
+        List<Item_CoinStorage> itemStorages = ItemManager.instance.FindAllItemsWithComponent<Item_CoinStorage>();
+        List<StorageHolder_Coin> coinHolders = new List<StorageHolder_Coin>();
+
+        foreach (var item in itemStorages)
+            coinHolders.Add(item.coinHolder);
+
+
+        return coinHolders;
+    }
 
     private List<GameObject> GenerateChangeCoins(int changeAmount)
     {
         int remaining = changeAmount;
         List<GameObject> changeCoins = new();
 
-        List<(Item_Coin prefab, int value)> denominations = new()
-    {
-        (goldenCoin, goldenCoin.GetCoinValue()),    // coin value assigned on coin itself
-        (silverCoin, silverCoin.GetCoinValue()),     
-        (copperCoin, copperCoin.GetCoinValue())      
-    };
+        var config = MetalConfig.Get();
+        var sortedCoins = config.allCoinsData
+            .Where(d => d != null)
+            .OrderByDescending(d => d.creditValue)
+            .ToList();
 
-        foreach (var (prefab, value) in denominations)
+        foreach (var data in sortedCoins)
         {
-            while (remaining >= value)
+            while (remaining >= data.creditValue)
             {
-                remaining -= value;
-
-                var coin = Instantiate(prefab, Vector3.one * 999, Quaternion.identity);
+                remaining -= data.creditValue;
+                GameObject newCoin = ItemManager.instance.CreateItem(data);
+                Item_Coin coin = newCoin.GetComponent<Item_Coin>();
                 coin.gameObject.SetActive(false);
                 coin.EnableStamps(true);
-                changeCoins.Add(coin.gameObject);
+                changeCoins.Add(newCoin);
             }
         }
 
         return changeCoins;
     }
-
 
 
     public bool HasCurrencyAmount(int totalPrice) => totalPrice <= currentCredit;
@@ -130,7 +134,7 @@ public class CurrencyManager : MonoBehaviour
         OnCreditUpdate?.Invoke(currentCredit);
     }
 
-    public void AddRespect(int amount)
+    public void AddFavour(int amount)
     {
         currentRespect = currentRespect + amount;
         OnRespectUpdate?.Invoke(currentRespect);

@@ -35,19 +35,19 @@ public class Tool_Fire : Item_Tool
     public override void OnItemUnpack()
     {
         base.OnItemUnpack();
-        EnableLightSource(false);
+        EnableFire(false);
     }
 
     public override void OnItemPickup()
     {
         base.OnItemPickup();
-        EnableLightSource(true);
+        EnableFire(true);
     }
 
     public override void OnItemDrop()
     {
         base.OnItemDrop();
-        EnableLightSource(true);
+        EnableFire(true);
     }
 
     public override void OnItemBeingPlaced(Vector3 placementPosition)
@@ -58,7 +58,7 @@ public class Tool_Fire : Item_Tool
             Audio.PlaySFX("torch_attached_to_wall", placementPosition);
     }
 
-    private void EnableLightSource(bool enable)
+    public void EnableFire(bool enable)
     {
         foreach (var item in lightSource)
         {
@@ -72,7 +72,7 @@ public class Tool_Fire : Item_Tool
         base.OnCollisionEnter(collision);
         if (((1 << collision.gameObject.layer) & whatIsGround) != 0)
         {
-            EnableLightSource(false);
+            EnableFire(false);
         }
     }
 }

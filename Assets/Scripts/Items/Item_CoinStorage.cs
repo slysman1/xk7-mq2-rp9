@@ -24,27 +24,31 @@ public class Item_CoinStorage : Item_Base, IOpenable
         if (lidIsClosed)
             CloseLid();
     }
- 
+
 
     public override void Interact(Transform caller)
     {
-        if (straightUpCo != null)
-            return;
 
-        if (IsStandingStraight() == false)
+        if (IsStandingStraight() == false || straightUpCo != null)
         {
             straightUpCo = StartCoroutine(StraightUpStorageCo());
             return;
         }
 
 
-        if (lidTransform != null && lidIsClosed)
+        if (player.interaction.QuickPressLMB())
         {
-            OpenLid();
-            return;
+            if (lidTransform != null && lidIsClosed)
+            {
+                OpenLid();
+                return;
+            }
+            else
+                coinHolder.TakeItems(1);
         }
+        else
+            base.Interact(caller);
 
-        coinHolder.TakeItems(1);
     }
 
     public override void SeconderyInteraction(Transform caller = null)
@@ -71,7 +75,7 @@ public class Item_CoinStorage : Item_Base, IOpenable
             {
                 inputHelp.AddInput(KeyType.LMB, "input_help_coin_storage_take_coin");
 
-                if(coinHolder.currentItems.Count > 1)
+                if (coinHolder.currentItems.Count > 1)
                     inputHelp.AddInput(KeyType.F, "input_help_coin_storage_take_max_coins");
             }
 

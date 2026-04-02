@@ -7,15 +7,14 @@ public class Item_Coin : Item_Base, IInteractable
 {
     public static event Action OnCoinStamped;
 
+    [SerializeField] private bool stampedByDefault;
     [Header("Stamp Details")]
     [SerializeField] private Material noStampMat;
     [SerializeField] private Material hasStampMat;
     [SerializeField] private GameObject onStampVfx;
     [SerializeField] private AudioSource sfx;
 
-    [Header("Coin Value")]
-    [SerializeField] private int creditValue = 1;
-    [SerializeField] private bool stampedByDefault;
+
     public bool hasStamp { get; private set; }
 
     protected override void Awake()
@@ -30,7 +29,7 @@ public class Item_Coin : Item_Base, IInteractable
         Audio.PlaySFX("coin_impact", transform);
     }
 
-    public int GetCoinValue() => creditValue;
+    public int GetCoinValue() => itemData.creditValue;
 
     
 

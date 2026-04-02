@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +7,7 @@ using UnityEngine;
 
 public class ItemHolder : MonoBehaviour, IHighlightable
 {
+    public event Action OnItemAmountChanged;
 
     protected Player player
     {
@@ -36,6 +38,9 @@ public class ItemHolder : MonoBehaviour, IHighlightable
 
     //private Coroutine takingItemsCo;
 
+    [Header("Default Added Items")]
+    [SerializeField] private ItemDataSO itemToAdd;
+    [SerializeField] private int amountToAdd;
 
 
     [Header("Reject Item Setup")]
@@ -52,7 +57,23 @@ public class ItemHolder : MonoBehaviour, IHighlightable
         itemBase = GetComponentInParent<Item_Base>();
     }
 
+    protected virtual void Start()
+    {
+        AddDefaultItems();
+    }
 
+    private void AddDefaultItems()
+    {
+        if (itemToAdd == null || amountToAdd <= 0)
+            return;
+
+        for (int i = 0; i < amountToAdd; i++)
+        {
+            Item_Base item = ItemManager.instance.CreateItem(itemToAdd).GetComponent<Item_Base>();
+            if (item != null)
+                AddItem(item);
+        }
+    }
 
     public void TakeItems(int amount = -1)
     {
@@ -242,12 +263,14 @@ public class ItemHolder : MonoBehaviour, IHighlightable
         item.Highlight(false);
         item.EnableCollider(false);
         item.EnableInHolderLayer(true);
+
+        OnItemAmountChanged?.Invoke();
     }
 
     protected virtual void OnItemRemoved(Item_Base item) 
     { 
         item.EnableInHolderLayer(true);
-
+        OnItemAmountChanged?.Invoke();
     }
 
 

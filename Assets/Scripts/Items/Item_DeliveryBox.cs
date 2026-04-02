@@ -195,4 +195,6 @@ public class Item_DeliveryBox : Item_Base
         else
             UI.instance.inGameUI.inputHelp.RemoveInput();
     }
+
+    public List<Item_Base> GetContainedItems() => containedItems;
 }

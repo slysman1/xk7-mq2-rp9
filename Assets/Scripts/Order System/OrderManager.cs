@@ -142,7 +142,7 @@ public class OrderManager : MonoBehaviour
         // if (completedQuestCount == 2)
         //     UI.instance.NotifyPlayer("not_can_do_multiple_quests");
 
-        CurrencyManager.instance.AddRespect(quest.favourPointReward);
+        CurrencyManager.instance.AddFavour(quest.favourPointReward);
         OnOrderCompleted?.Invoke();
 
         Debug.Log($"✅ Completed “{quest.name}” ({remainingOrders.Count} left in set {currentSetIndex}).");

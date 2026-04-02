@@ -5,7 +5,7 @@ using static Alexdev.TweenUtils;
 
 public class Item_Dummy : Item_Base
 {
-    private Object_Outline[] outlineSet;
+    
     private Holder_DummyBucket bucketHolder;
 
     [Header("VFX details")]
@@ -14,8 +14,6 @@ public class Item_Dummy : Item_Base
     [SerializeField] private float shakeAnimDuration = .1f;
 
     [Header("Bucket Details")]
-    [SerializeField] private ItemDataSO bucketData;
-    [SerializeField] private bool hasBucketAtStart;
     [SerializeField] private float backwardsVelocity = 2f;
     [SerializeField] private float removeVelocityY = 3f;
     private Coroutine interactionCo;
@@ -24,14 +22,7 @@ public class Item_Dummy : Item_Base
     {
         base.Awake();
         bucketHolder = GetComponentInChildren<Holder_DummyBucket>(true);
-        outlineSet = GetComponentsInChildren<Object_Outline>(true);
-        bucketHolder.OnItemAmountChanged += UpdateOutlineSet;
-    }
-
-    protected override void Start()
-    {
-        base.Start();
-        InitializeBucketIfNeeded();
+        bucketHolder.OnItemAmountChanged += CacheOutlines;
     }
 
     public override void ShowInputUI(bool enable)
@@ -55,29 +46,6 @@ public class Item_Dummy : Item_Base
         }
         else
             inputHelp.RemoveInput();
-    }
-
-
-
-    private void InitializeBucketIfNeeded()
-    {
-        if (hasBucketAtStart == false)
-            return;
-
-        Item_DummyBucket bucket = ItemManager.instance.CreateItem(bucketData).GetComponent<Item_DummyBucket>();
-
-        if (bucket != null) 
-            bucketHolder.AddItem(bucket);
-    }
-
-    private void UpdateOutlineSet() => outlineSet= GetComponentsInChildren<Object_Outline>(true);
-
-    public override void Highlight(bool enable)
-    {
-        foreach (var outline in outlineSet)
-            outline.EnableOutline(enable ? OutlineType.Highlight : OutlineType.None);
-
-        ShowInputUI(enable);
     }
 
     public override void SeconderyInteraction(Transform caller = null)
