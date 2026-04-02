@@ -29,4 +29,18 @@ public class FurnaceHolder_MetalBar : ItemHolder
     }
 
     public Item_MetalBar GetMetalBar() => currentItems.FirstOrDefault() as Item_MetalBar;
+
+    public override void ShowSlots(bool showSlots)
+    {
+        if (!showSlots)
+        {
+            foreach (var slot in slots) 
+                slot.gameObject.SetActive(false);
+        }
+        else
+        {
+            for (int i = 0; i < maxCapacity; i++)
+                slots[i].gameObject.SetActive(true); 
+        }
+    }
 }

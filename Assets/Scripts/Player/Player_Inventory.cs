@@ -134,10 +134,10 @@ public class Player_Inventory : MonoBehaviour
 
 
 
-    public void PlaceItem(Item_Base item, Vector3 position, Quaternion rotation,float interactionDelay = 0)
+    public void PlaceItem(Item_Base item, Vector3 position, Quaternion rotation,float interactionLayerDelay = 0)
     {
         item.OnItemBeingPlaced(position);
-        RemoveItem(item, position, rotation, GetCarriedItems(),interactionDelay);
+        RemoveItem(item, position, rotation, GetCarriedItems(),interactionLayerDelay);
     }
 
     public void PickupItem(Item_Base item)
@@ -193,7 +193,7 @@ public class Player_Inventory : MonoBehaviour
     }
 
 
-    private IEnumerator RemoveItemCo(Item_Base item, Vector3 position, Quaternion rotation, List<Item_Base> itemsToModify = null, bool forceDynamic = false,float interactionDelay = 0)
+    private IEnumerator RemoveItemCo(Item_Base item, Vector3 position, Quaternion rotation, List<Item_Base> itemsToModify = null, bool forceDynamic = false,float originalLayerDelay = 0)
     {
         if (itemsToModify != null && itemsToModify.Contains(item))
             itemsToModify.Remove(item);
@@ -208,10 +208,10 @@ public class Player_Inventory : MonoBehaviour
             item.EnableKinematic(false);
 
         yield return new WaitForSeconds(.02f);
+        item.EnableOriginalLayersDelayed(originalLayerDelay);
 
         if (item.currentItemHolder == null)
             item.OnItemDrop();
-        
 
         if (carriedItems.Count == 0)
             weightInHands = ItemWeightType.None;

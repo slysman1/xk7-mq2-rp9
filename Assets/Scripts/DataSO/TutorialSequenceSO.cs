@@ -4,4 +4,5 @@ using UnityEngine;
 public class TutorialSequenceSO : ScriptableObject
 {
     public TutorialStep[] steps;
+    public TutorialStep[] savedSteps;
 }

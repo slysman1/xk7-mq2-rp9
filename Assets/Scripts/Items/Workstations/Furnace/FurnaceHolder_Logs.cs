@@ -30,8 +30,7 @@ public class FurnaceHolder_Logs : ItemHolder
     }
 
 
-
-    public void ShowSlots(bool showSlots)
+    public override void ShowSlots(bool showSlots)
     {
         if (!showSlots)
         {

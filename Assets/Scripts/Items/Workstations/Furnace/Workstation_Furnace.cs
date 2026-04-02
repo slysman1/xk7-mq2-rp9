@@ -134,8 +134,8 @@ public class Workstation_Furnace : Workstation
         bellowsAnimation.StopBellows();
         EnableFireVFX(false);
 
-        logHolder.RemoveAmount(logsNeededPerProduction);
-        metalBarHolder.RemoveAmount(metalNeededPerProduction);
+        logHolder.RemoveAmount(logsNeededPerProduction, true);
+        metalBarHolder.RemoveAmount(metalNeededPerProduction, true);
 
 
 

@@ -58,6 +58,7 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
 
     private string inHolderLayer = "InteractableInHolder";
     private string cameraLayer = "ItemInHand";
+    private string defaultLayer = "Default";
     private Dictionary<GameObject, int> originalLayers = new Dictionary<GameObject, int>();
 
 
@@ -118,16 +119,6 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
         EnableConvex(!isKinematic); // dynamic = needs convex, kinematic = restore original
     }
 
-    public virtual void EnableCamPriority(bool enable)
-    {
-        if (enable)
-        {
-            foreach (var kvp in originalLayers)
-                kvp.Key.layer = LayerMask.NameToLayer(cameraLayer);
-        }
-        else
-            EnableOriginalLayers();
-    }
 
     public virtual void SeconderyInteraction(Transform caller = null) { }
 
@@ -176,22 +167,6 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
         }
     }
 
-    public void EnableInHolderLayer(bool inHolder)
-    {
-        if (inHolder)
-        {
-            foreach (var kvp in originalLayers)
-                kvp.Key.layer = LayerMask.NameToLayer(inHolderLayer);
-        }
-        else
-            EnableOriginalLayers();
-    }
-
-    public void EnableOriginalLayers()
-    {
-        foreach (var kvp in originalLayers)
-            kvp.Key.layer = kvp.Value;
-    }
 
     public virtual void OnItemDrop()
     {
@@ -205,14 +180,11 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
     {
 
     }
-
     public virtual void OnItemUnpack()
     {
         EnableKinematic(false);
         transform.localScale = Vector3.one;
     }
-
-
     public virtual void Highlight(bool enable)
     {
 
@@ -333,14 +305,6 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
 
 
 
-    protected void CacheOriginalLayers()  // was private
-    {
-        originalLayers.Clear();
-
-        foreach (Transform t in GetComponentsInChildren<Transform>(true))
-            if (originalLayers.ContainsKey(t.gameObject) == false)
-                originalLayers.Add(t.gameObject, t.gameObject.layer);
-    }
 
     private void CacheMeshConvexState()
     {
@@ -353,10 +317,6 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
         return Vector3.Angle(transform.up, Vector3.up) < 5f; // tolerance in degrees
     }
 
-    public virtual void EnableAsItWereInHolder(bool display)
-    {
-        EnableCamPriority(!display);
-    }
 
     public virtual int GetMaxStack() => itemData.maxStackInHand;
     public float GetStackYOffset() => itemData.itemStackYoffset;
@@ -369,6 +329,66 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
     }
 
 
+    #region Enable Layer Region
+
+    public virtual void EnableCamPriority(bool enable)
+    {
+        if (enable)
+        {
+            foreach (var kvp in originalLayers)
+                kvp.Key.layer = LayerMask.NameToLayer(cameraLayer);
+        }
+        else
+            EnableOriginalLayers();
+    }
+    public void EnableInHolderLayer(bool inHolder)
+    {
+        if (inHolder)
+        {
+            foreach (var kvp in originalLayers)
+                kvp.Key.layer = LayerMask.NameToLayer(inHolderLayer);
+        }
+        else
+            EnableOriginalLayers();
+    }
+
+    public void EnableOriginalLayers()
+    {
+        foreach (var kvp in originalLayers)
+            kvp.Key.layer = kvp.Value;
+    }
+
+    public void EnableOriginalLayersDelayed(float delay) => StartCoroutine(EnableOriginalLayersDelayedCo(delay));
+
+    private IEnumerator EnableOriginalLayersDelayedCo(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        EnableOriginalLayers();
+    }
+    public virtual void EnableAsItWereInHolder(bool display)
+    {
+        if (display)
+            EnableDefaultLayer();
+        else
+            EnableCamPriority(true);
+    }
+
+    public virtual void EnableDefaultLayer()
+    {
+        foreach (var kvp in originalLayers)
+            kvp.Key.layer = LayerMask.NameToLayer(defaultLayer);
+    }
+
+    protected void CacheOriginalLayers()  // was private
+    {
+        originalLayers.Clear();
+
+        foreach (Transform t in GetComponentsInChildren<Transform>(true))
+            if (originalLayers.ContainsKey(t.gameObject) == false)
+                originalLayers.Add(t.gameObject, t.gameObject.layer);
+    }
+
+    #endregion
 
 
 #if UNITY_EDITOR
