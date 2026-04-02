@@ -215,9 +215,7 @@ public class Player_Interaction : MonoBehaviour
         {
             if (HeldEnoughToTryPlacementPreview() && previewHandler.isPlacingItem == false)
             {
-                if (CanAddItemsToHolder(out _))
-                    yield break; // already aiming at holder, don't enter placement mode
-
+                raycaster.ForceUpdate();
                 previewHandler.TryPlacementMode();
             }
 

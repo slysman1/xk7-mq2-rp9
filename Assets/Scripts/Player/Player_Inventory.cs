@@ -76,6 +76,13 @@ public class Player_Inventory : MonoBehaviour
         if (addingItemsCo != null)
             return;
 
+        carriedItems.Remove(item); // ← remove immediately, don't wait for coroutine
+
+        if (carriedItems.Count == 0)
+            weightInHands = ItemWeightType.None;
+
+        OnItemAmountUpdate?.Invoke();
+
         addingItemsCo = StartCoroutine(AddDirectlyToHolderCo(new List<Item_Base> { item }, holder));
     }
 

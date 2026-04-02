@@ -145,6 +145,7 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
 
     public virtual void OnItemPickup()
     {
+        Debug.Log($"OnItemPickup called on {gameObject.name}\n{System.Environment.StackTrace}");
         EnableCamPriority(true);
         EnableConvex(true);
 
