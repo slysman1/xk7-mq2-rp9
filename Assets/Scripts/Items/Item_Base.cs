@@ -21,7 +21,10 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
     public HeatEmission heatHandler { get; private set; }
     public Rigidbody rb { get; private set; }
     protected Collider[] colliders;
+    
+
     private Dictionary<MeshCollider, bool> meshConvexStates = new Dictionary<MeshCollider, bool>();
+    private Dictionary<GameObject, int> savedLayers = new Dictionary<GameObject, int>();
 
     protected Player player
     {
@@ -335,6 +338,38 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
 
 
     #region Enable Layer Region
+
+
+    public void SaveCurrentLayers()
+    {
+        savedLayers.Clear();
+
+        foreach (Transform t in GetComponentsInChildren<Transform>(true))
+            if (savedLayers.ContainsKey(t.gameObject) == false)
+                savedLayers.Add(t.gameObject, t.gameObject.layer);
+
+        foreach (var item in GetComponentsInChildren<Item_Base>(true))
+            item.EnableCamPriority(true);
+    }
+
+    public void RestoreSavedLayers()
+    {
+        foreach (var kvp in savedLayers)
+            if (kvp.Key != null)
+                kvp.Key.layer = kvp.Value;
+
+        savedLayers.Clear();
+    }
+
+    public void EnableSavedLayers()
+    {
+        foreach (var kvp in savedLayers)
+            if (kvp.Key != null)
+                kvp.Key.layer = kvp.Value;
+
+        savedLayers.Clear();
+    }
+
 
     public virtual void EnableCamPriority(bool enable)
     {

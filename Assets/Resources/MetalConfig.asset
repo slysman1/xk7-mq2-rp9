@@ -39,3 +39,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7d81b934426fe93419309f391926e924, type: 2}
   - {fileID: 11400000, guid: cfcc4a79223581a4cb2718c21a0d880d, type: 2}
   - {fileID: 11400000, guid: bc464d97a3b908f408c3f6ec36f5c22a, type: 2}
+  allCoinsData:
+  - {fileID: 11400000, guid: d3a5310ced061c949b91e6db9ee2bc25, type: 2}
+  - {fileID: 11400000, guid: c6eabf2fd94777042918b38200c9ef59, type: 2}
+  - {fileID: 11400000, guid: eceba78694369f24090e00ccf7faeae8, type: 2}

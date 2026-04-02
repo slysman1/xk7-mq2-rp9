@@ -133,6 +133,14 @@ public class Player_Raycaster : MonoBehaviour
 
         hasHoverHit = false;
     }
+    public void ForceUpdate()
+    {
+        Ray ray = new Ray(cam.transform.position, cam.transform.forward);
+        UpdateInteractableHit(ray);
+        UpdateCombinedHit(ray);
+        UpdateHighlightHit(ray);
+        UpdateHoverHit(ray);
+    }
 
     // --- On-demand fresh raycasts for interaction/preview ---
 

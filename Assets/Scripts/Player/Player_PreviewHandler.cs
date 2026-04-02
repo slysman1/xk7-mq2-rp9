@@ -93,6 +93,7 @@ public class Player_PreviewHandler : MonoBehaviour
         if (itemBeingPlaced == null)
             return;
 
+        raycaster.ForceUpdate();
         raycaster.SetUpdateRate(0.01f);
         EnableLineRendererColor(true);
 
@@ -112,6 +113,7 @@ public class Player_PreviewHandler : MonoBehaviour
         previewObject.SetRotation(currentPreviewRotation);
 
         isPlacingItem = true;
+        //UpdatePreview();
 
         UI.instance.inputHelp.RemoveInput();
         UI.instance.inputHelp.AddInput(KeyType.LMB, "input_drop_placement_confirm");

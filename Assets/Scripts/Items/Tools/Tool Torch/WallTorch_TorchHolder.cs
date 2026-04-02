@@ -19,6 +19,12 @@ public class WallTorch_TorchHolder : ItemHolder
         Tool_Fire fire = item.GetComponent<Tool_Fire>();
 
         fire?.EnableFire(true);
-        
+        slots[0].gameObject.SetActive(true);
+    }
+
+    protected override void OnItemRemoved(Item_Base item)
+    {
+        base.OnItemRemoved(item);
+        slots[0].gameObject.SetActive(false);
     }
 }

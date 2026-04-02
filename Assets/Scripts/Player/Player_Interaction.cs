@@ -206,76 +206,6 @@ public class Player_Interaction : MonoBehaviour
         lmbInputCo = null;
     }
 
-    //private IEnumerator LmbInputCo()
-    //{
-    //    //if (holdingRMB && previewHandler.isPlacingItem)
-    //    //{
-
-    //    //        yield break;
-    //    //}
-
-    //    if (holdingRMB && previewHandler.CanPlaceItem())
-    //    {
-    //        previewHandler.FinalizePlacement();
-    //        yield break;
-    //    }
-
-    //    if (raycaster.HitInteractable(out RaycastHit hit) == false)
-    //        yield break;
-
-
-
-    //    float timePassed = 0;
-    //    Item_Base item = hit.collider.GetComponentInParent<Item_Base>();
-    //    Item_Tool tool = inventory.GetToolInHand();
-
-    //    IInteractable interactable = hit.collider.GetComponentInParent<IInteractable>();
-
-    //    bool canInteractWithItem = interactable != null || item != null && item.HasInteractions();
-
-    //    if (interactable != null && item == null) // Needed for interaction with Non-Items Objects
-    //    {
-    //        interactable.Interact(transform);
-    //        yield break;
-    //    }
-
-    //    // 1. Tool interaction (immediate)
-    //    if (tool != null && item != null && /* item.HasInteractions() &&*/ tool.CanInteractWith(item.itemData))
-    //    {
-    //        tool.PerformInteraction(item, player);
-    //        yield break;
-    //    }
-
-    //    while (timePassed < holdThreshold && holdingLMB)
-    //    {
-    //        if (canInteractWithItem == false)
-    //            break;
-
-    //        timePassed += Time.deltaTime;
-    //        yield return null;
-    //    }
-
-    //    bool quickButtonPress = timePassed < holdThreshold;
-    //    bool canDoQuickInteraction = quickButtonPress && item != null && item.GetPickupTime() > 0;
-    //    //bool needHoldToPickup = item.GetPickupTime() > 0;
-
-    //    // If your item gets picked up instead of interaction. 
-    //    // Make sure hasInteraction is true
-
-    //    if (canInteractWithItem && canDoQuickInteraction)
-    //    {
-    //        interactable.Interact(transform);
-    //    }
-    //    else if (inventory.CanPickup(item))// && item.CanBePickedUp())
-    //    {
-    //        StartCoroutine(BeginPickupCo(item));
-    //    }
-
-    //    holdLMBCo = null;
-    //}
-
-
-
     private IEnumerator RmbInputCo()
     {
         rmbHoldStartTime = Time.time;
@@ -284,7 +214,12 @@ public class Player_Interaction : MonoBehaviour
         while (holdingRMB)
         {
             if (HeldEnoughToTryPlacementPreview() && previewHandler.isPlacingItem == false)
+            {
+                if (CanAddItemsToHolder(out _))
+                    yield break; // already aiming at holder, don't enter placement mode
+
                 previewHandler.TryPlacementMode();
+            }
 
             yield return null;
         }

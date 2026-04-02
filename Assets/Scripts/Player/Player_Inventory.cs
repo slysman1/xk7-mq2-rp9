@@ -68,10 +68,7 @@ public class Player_Inventory : MonoBehaviour
             return;
 
         List<Item_Base> listOfItems = new List<Item_Base>(GetCarriedItems());
-        carriedItems.Clear();
-        OnItemAmountUpdate?.Invoke();
-
-        addingItemsCo = StartCoroutine(AddDirectlyToHolderCo(listOfItems, holder));
+        addingItemsCo = StartCoroutine(AddDirectlyToHolderCo(GetCarriedItems(), holder));
     }
 
     public void AddSingleItemDirectlyToHolder(Item_Base item, ItemHolder holder)
@@ -79,12 +76,7 @@ public class Player_Inventory : MonoBehaviour
         if (addingItemsCo != null)
             return;
 
-        carriedItems.Remove(item);
-        OnItemAmountUpdate?.Invoke();
-
-        List<Item_Base> itemsToAdd = new List<Item_Base>();
-        itemsToAdd.Add(item);
-        addingItemsCo = StartCoroutine(AddDirectlyToHolderCo(itemsToAdd, holder));
+        addingItemsCo = StartCoroutine(AddDirectlyToHolderCo(new List<Item_Base> { item }, holder));
     }
 
     private IEnumerator AddDirectlyToHolderCo(List<Item_Base> listOfItems, ItemHolder holder)
@@ -97,15 +89,28 @@ public class Player_Inventory : MonoBehaviour
             yield return new WaitForSeconds(.1f);
 
             if (holder.ItemCanBePlaced(itemToAdd))
-            {
-                RemoveItem(itemToAdd, holder.GetPlacementPosition(), Quaternion.identity, listOfItems, false);
-                holder.AddItem(itemToAdd);
-            }
+                PlaceItemInHolder(itemToAdd, holder, listOfItems);
         }
+
 
         addingItemsCo = null;
     }
 
+    public void PlaceItemInHolder(Item_Base item, ItemHolder holder, List<Item_Base> itemsToModify = null)
+    {
+        carriedItems.Remove(item); // always remove from carried
+        itemsToModify?.Remove(item);
+
+        item.transform.SetParent(null);
+        item.Highlight(false);
+
+        holder.AddItem(item);
+
+        if (carriedItems.Count == 0)
+            weightInHands = ItemWeightType.None;
+
+        OnItemAmountUpdate?.Invoke();
+    }
 
 
     public void InstantReleaseAllItems(Vector3 position,Transform placementPoint = null)
@@ -157,25 +162,22 @@ public class Player_Inventory : MonoBehaviour
     {
         Transform carryPoint = GetCarryPoint();
 
-        item.gameObject.SetActive(true);
-        item.EnableKinematic(true);
-        
-        item.EnableCollider(false);
-
         item.transform.parent = carryPoint;
+        item.EnableKinematic(true);
+        item.EnableCollider(false);
         item.SetItemHolder(null);
-
+        
 
         int itemCountBeforePickup = carriedItems.Count - 1;
         Vector3 targetOffset = new Vector3(0, itemCountBeforePickup * item.GetStackYOffset());
 
-        OnItemAmountUpdate?.Invoke();
 
         Audio.PlaySFX("item_default_move_anim", item.transform);
         StartCoroutine(SetLocalRotationAs(item.transform, item.GetInHandRotation(), pickUpDuration));
         yield return StartCoroutine(ArcLocal(item.transform, item.GetInHandPosition() + targetOffset, pickUpArc, pickUpDuration));
 
         weightInHands = item.GetItemWeightType();
+        OnItemAmountUpdate?.Invoke();
         item.OnItemPickup();
 
         Item_CarryTool carryTool = carryPoint.GetComponentInParent<Item_CarryTool>();
@@ -296,7 +298,6 @@ public class Player_Inventory : MonoBehaviour
         return false;
     }
 
-    public int GetAmountOfItemsInHand() => carriedItems.Count;
     public bool TryGetCoinsInHands(out int stampedCoins, out int unstampedCoins)
     {
         stampedCoins = 0;
@@ -319,7 +320,6 @@ public class Player_Inventory : MonoBehaviour
 
         return stampedCoins > 0 || unstampedCoins > 0;
     }
-
     public bool DoingAction() => addingItemsCo != null || takingItemsCo != null;
 
 }
