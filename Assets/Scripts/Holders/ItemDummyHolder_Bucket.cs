@@ -1,42 +1,41 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Holder_DummyBucket : ItemHolder
+public class ItemDummyHolder_Bucket : ItemHolder
 {
   
     [Header("Dummy Bucket Details")]
     [SerializeField] private Transform extraCollider;
-    private DummyBucket_Slot bucketSlot;
-    private Collider triggerCollider;
+    private List<DummyHolder_BucketSlot> slots;
+    
     
 
     protected override void Awake()
     {
         base.Awake();
-        bucketSlot = GetComponentInChildren<DummyBucket_Slot>(true);
-        triggerCollider = GetComponentInChildren<Collider>(true);
+        slots = SetupSlots<DummyHolder_BucketSlot>();
     }
 
 
     protected override void OnItemAdded(Item_Base item)
     {
+        extraCollider.gameObject.SetActive(false);
         base.OnItemAdded(item);
         
         Item_DummyBucket bucket = item as Item_DummyBucket;
         bucket.EnableHappyFace(true);
 
-        extraCollider.gameObject.SetActive(false);
     }
 
     protected override void OnItemRemoved(Item_Base item)
     {
+        extraCollider.gameObject.SetActive(true);
         base.OnItemRemoved(item);
 
         Item_DummyBucket bucket = item as Item_DummyBucket;
         bucket.EnableHappyFace(false);
-
-        extraCollider.gameObject.SetActive(true);
     }
 
 
@@ -46,18 +45,6 @@ public class Holder_DummyBucket : ItemHolder
             return currentItems[0] as Item_DummyBucket;
 
         return null;
-    }
-
-    public void PauseTriggerCollider(float pauseTime)
-    {
-        StartCoroutine(PauseTriggerColliderCo(pauseTime));
-    }
-
-    private IEnumerator PauseTriggerColliderCo(float pauseTime)
-    {
-        triggerCollider.enabled = false;
-        yield return new WaitForSeconds(pauseTime);
-        triggerCollider.enabled = true;
     }
 
     //public void EnableBucketPreviwIfCan(bool enable)

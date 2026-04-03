@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CollectableCoin_Slot : MonoBehaviour
+public class CollectableStandHolder_CoinsSlot : MonoBehaviour
 {
     [SerializeField] private CollectableCoinType collectableType;
 

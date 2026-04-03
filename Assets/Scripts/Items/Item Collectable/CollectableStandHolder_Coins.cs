@@ -1,33 +1,25 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Holder_CollectableCoins : ItemHolder
+public class CollectableStandHolder_Coins : ItemHolder
 {
-    [SerializeField] private CollectableCoin_Slot[] collectableSlot;
+    [SerializeField] private List<CollectableStandHolder_CoinsSlot> slots;
 
     protected override void Awake()
     {
         base.Awake();
-        collectableSlot = GetComponentsInChildren<CollectableCoin_Slot>(true);
+        slots = SetupSlots<CollectableStandHolder_CoinsSlot>();
     }
-
 
     protected override void OnItemAdded(Item_Base item)
     {
-        Item_CollectableCoin collectableCoin = item as Item_CollectableCoin;
-        Transform slot = GetCollectableSlot(collectableCoin.GetCollectableType());
-
-        collectableCoin.transform.parent = transform;
-        collectableCoin.transform.position = slot.position;
-        collectableCoin.transform.rotation = slot.rotation;
-
-        collectableCoin.SetItemHolder(this);
-        collectableCoin.EnableKinematic(true);
+        base.OnItemAdded(item);
+        item.EnableCollider(true);
     }
-
 
     public Transform GetCollectableSlot(CollectableCoinType slotType)
     {
-        foreach (var slot in collectableSlot)
+        foreach (var slot in slots)
             if (slot.GetCollectableType() == slotType)
                 return slot.transform;
 

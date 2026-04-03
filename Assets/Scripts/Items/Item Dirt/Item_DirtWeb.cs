@@ -49,8 +49,9 @@ public class Item_DirtWeb : Item_Dirt
         if (onCleanFx != null)
             onCleanFx.Play();
 
-        blockOutline = true;
         HideIndicator(true);
+        
+        blockOutline = true;
 
         float time = 0f;
         float startDissolve = mat.GetFloat(dissolveProperty);

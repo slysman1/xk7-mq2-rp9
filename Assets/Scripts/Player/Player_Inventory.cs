@@ -59,6 +59,9 @@ public class Player_Inventory : MonoBehaviour
 
         if (timePassed >= duration)
             PickupItem(item);
+
+        yield return new WaitForSeconds(.05f);
+        UI.instance.pointerUI.CancelFill();
     }
 
 

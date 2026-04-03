@@ -68,7 +68,7 @@ public class UI_OnObjectIndicator : MonoBehaviour
     {
         if(isHidden)
             return;
-
+        
         indicator.SetActive(enable);
 
         if (enable)

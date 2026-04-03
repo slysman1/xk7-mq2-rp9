@@ -211,6 +211,8 @@ public class DirtManager : MonoBehaviour
             if (pair.Value == dirt.gameObject)
             {
                 UI.instance.taskIndicator.RemoveTarget(dirt.transform);
+                
+
 
                 activeDirts.Remove(pair.Key);
                 ItemManager.instance.DestroyItem(dirt);

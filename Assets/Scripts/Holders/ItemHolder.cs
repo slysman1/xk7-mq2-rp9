@@ -47,7 +47,7 @@ public class ItemHolder : MonoBehaviour, IHighlightable
     [SerializeField] private float rejectUpPower = 2;
     [SerializeField] private float rejectForwardPower = 2;
     public List<Item_Base> currentItems/* { get; private set; } */= new();
-    private Collider holderTrigger;
+    protected Collider holderTrigger;
     private Coroutine pauseTriggerCo;
 
     protected virtual void Awake()
@@ -128,10 +128,10 @@ public class ItemHolder : MonoBehaviour, IHighlightable
 
         var slot = GetItemSlot(item);
 
-        if (slot != null) 
+        if (slot != null)
             UnregisterSlot(slot);
 
-        if (item.currentItemHolder == this) 
+        if (item.currentItemHolder == this)
             item.SetItemHolder(null);
 
 
@@ -151,13 +151,13 @@ public class ItemHolder : MonoBehaviour, IHighlightable
             .ToList();
 
         foreach (var i in toRemove)
-            RemoveItem(i,destroy);
+            RemoveItem(i, destroy);
     }
-    public virtual void RemoveAmount(int amount,bool destroy = false)
+    public virtual void RemoveAmount(int amount, bool destroy = false)
     {
         int removeCount = Mathf.Min(amount, currentItems.Count);
         for (int i = 0; i < removeCount; i++)
-            RemoveItem(currentItems[currentItems.Count - 1],destroy);
+            RemoveItem(currentItems[currentItems.Count - 1], destroy);
     }
 
 
@@ -185,33 +185,35 @@ public class ItemHolder : MonoBehaviour, IHighlightable
 
     public virtual bool ItemCanBePlaced(Item_Base item)
     {
-        bool valid = true;
 
         if (item == null)
         {
             Debug.Log("It's not an item - " + gameObject.name);
-            valid = false;
+            return false;
         }
 
         if (IsFull())
         {
             Debug.Log("Capacity is full for - " + gameObject.name);
-            valid = false;
+            return false;
         }
+
+        if (GetFreeSlot() == null)
+            return false;
 
         if (IsValidItem(item) == false)
         {
             Debug.Log("Item is not valid - " + item.gameObject.name);
-            valid = false;
+            return false;
         }
 
         if (currentItems.Contains(item))
         {
             Debug.Log("Object already in holder - " + item.gameObject.name);
-            valid = false;
+            return false;
         }
 
-        return valid;
+        return true;
     }
 
 
@@ -227,7 +229,7 @@ public class ItemHolder : MonoBehaviour, IHighlightable
 
     public virtual Vector3 GetPlacementPosition()
     {
-        
+
         return transform.position + (Vector3.up * .5f);
     }
 
@@ -236,7 +238,7 @@ public class ItemHolder : MonoBehaviour, IHighlightable
     public bool HasItem() => currentItems.Count > 0;
     public bool IsFull() => currentItems.Count >= maxCapacity;
     public virtual List<Item_Base> GetCurrentItems() => currentItems;
-    
+
     protected virtual bool IsValidItem(Item_Base item) => allowedItemData.Contains(item.itemData);
 
     protected virtual void OnItemAdded(Item_Base item)
@@ -251,9 +253,9 @@ public class ItemHolder : MonoBehaviour, IHighlightable
         }
 
         item.transform.position = slot.position;
-        item.transform.rotation = slot.rotation; 
+        item.transform.rotation = slot.rotation;
 
-        
+
         RegisterSlot(slot, item);
 
         item.transform.parent = transform;
@@ -267,8 +269,8 @@ public class ItemHolder : MonoBehaviour, IHighlightable
         OnItemAmountChanged?.Invoke();
     }
 
-    protected virtual void OnItemRemoved(Item_Base item) 
-    { 
+    protected virtual void OnItemRemoved(Item_Base item)
+    {
         item.EnableInHolderLayer(true);
         OnItemAmountChanged?.Invoke();
     }

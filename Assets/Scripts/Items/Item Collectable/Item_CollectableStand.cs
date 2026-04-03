@@ -4,12 +4,12 @@ public class Item_CollectableStand : Item_Base
 {
     private Object_Outline[] outlineSet;
 
-    private Holder_CollectableCoins collectableHolder;
+    private CollectableStandHolder_Coins collectableHolder;
 
     protected override void Awake()
     {
         base.Awake();
-        collectableHolder = GetComponentInChildren<Holder_CollectableCoins>();
+        collectableHolder = GetComponentInChildren<CollectableStandHolder_Coins>();
 
     }
 

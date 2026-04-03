@@ -6,7 +6,7 @@ using static Alexdev.TweenUtils;
 public class Item_Dummy : Item_Base
 {
     
-    private Holder_DummyBucket bucketHolder;
+    private ItemDummyHolder_Bucket bucketHolder;
 
     [Header("VFX details")]
     [SerializeField] private float shakePower = 10;
@@ -21,7 +21,7 @@ public class Item_Dummy : Item_Base
     protected override void Awake()
     {
         base.Awake();
-        bucketHolder = GetComponentInChildren<Holder_DummyBucket>(true);
+        bucketHolder = GetComponentInChildren<ItemDummyHolder_Bucket>(true);
         bucketHolder.OnItemAmountChanged += CacheOutlines;
     }
 
@@ -80,6 +80,7 @@ public class Item_Dummy : Item_Base
             //bucketHolder.PauseTriggerCollider(1f);
             Vector3 bucketVelocity = -localDir * backwardsVelocity + new Vector3(0, removeVelocityY, 0);
             bucket.SendBucketFlying(bucketVelocity);
+            bucketHolder.PauseTrigger();
         }
 
         // small overshoot back

@@ -16,14 +16,14 @@ public class Collectable_Manager : MonoBehaviour
         }
 
     }
-    private Holder_CollectableCoins collectableCoins;
+    private CollectableStandHolder_Coins collectableCoins;
 
     [SerializeField] private ItemDataSO[] collectableCoinData;
 
     private void Awake()
     {
         instance = this;
-        collectableCoins = GetComponentInChildren<Holder_CollectableCoins>();
+        collectableCoins = GetComponentInChildren<CollectableStandHolder_Coins>();
     }
 
     public bool CanCreateCollectableOfType(CollectableCoinType collectableType, out GameObject collectable)

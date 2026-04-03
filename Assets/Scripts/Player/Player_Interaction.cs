@@ -125,7 +125,7 @@ public class Player_Interaction : MonoBehaviour
 
         IInteractable interactable = hit.collider.GetComponentInParent<IInteractable>();
 
-        if (interactable == null )//|| interactable.HasInteractions() == false)
+        if (interactable == null)//|| interactable.HasInteractions() == false)
             yield break;
 
         float duration = interactable.GetInteractionTime();

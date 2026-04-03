@@ -7,7 +7,7 @@ public class Item_PiggyBank : Item_Base
 {
     private Item_DirtBrokenPiggyBank brokenPiggyBank;
     private Holder_PiggyBankContent holderPiggyContent;
-    private Holder_CollectableCoins collectableHolder;
+    private CollectableStandHolder_Coins collectableHolder;
 
     [Header("Piggy Details")]
     [Range(0f, 1f)]
@@ -25,7 +25,7 @@ public class Item_PiggyBank : Item_Base
     {
         base.Awake();
         holderPiggyContent = GetComponentInChildren<Holder_PiggyBankContent>(true);
-        collectableHolder = FindAnyObjectByType<Holder_CollectableCoins>();
+        collectableHolder = FindAnyObjectByType<CollectableStandHolder_Coins>();
     }
 
     private void InitializeBrokenPieces()
