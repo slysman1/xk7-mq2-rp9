@@ -28,16 +28,15 @@ public class Item_CoinStorage : Item_Base, IOpenable
 
     public override void Interact(Transform caller)
     {
-
-        if (IsStandingStraight() == false || straightUpCo != null)
-        {
-            straightUpCo = StartCoroutine(StraightUpStorageCo());
-            return;
-        }
-
-
         if (player.interaction.QuickPressLMB())
         {
+
+            if (IsStandingStraight() == false || straightUpCo != null)
+            {
+                straightUpCo = StartCoroutine(StraightUpStorageCo());
+                return;
+            }
+
             if (lidTransform != null && lidIsClosed)
             {
                 OpenLid();

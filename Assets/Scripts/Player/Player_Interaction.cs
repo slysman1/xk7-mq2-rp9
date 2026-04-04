@@ -227,6 +227,7 @@ public class Player_Interaction : MonoBehaviour
         {
             if (inventory.DoingAction())
                 yield break;
+            
 
             if (CanAddItemsToHolder(out ItemHolder holder))
             {
@@ -266,8 +267,12 @@ public class Player_Interaction : MonoBehaviour
 
     private ItemHolder GetItemHolder()
     {
-        Item_Base itemInHand = inventory.GetTopItem();
 
+        if (raycaster.HitCombined(out RaycastHit combinedHit) && raycaster.HitPlacementBlocker(combinedHit))
+            return null;
+
+        Item_Base itemInHand = inventory.GetTopItem();
+        
         if (itemInHand == null)
             return null;
 
@@ -277,6 +282,9 @@ public class Player_Interaction : MonoBehaviour
         ItemHolder[] allHolders = rayHit.collider.transform.root.GetComponentsInChildren<ItemHolder>();
         foreach (var holder in allHolders)
         {
+            if (holder.CanSnapPreview() == false)
+                continue;
+
             if (holder.ItemCanBePlaced(itemInHand))
                 return holder;
         }

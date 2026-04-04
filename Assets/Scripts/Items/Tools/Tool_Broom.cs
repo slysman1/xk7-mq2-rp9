@@ -62,7 +62,7 @@ public class Tool_Broom : Item_Tool
         if (canCleanDirt)
         {
             Audio.PlaySFX("brom_clean_up_finish", dirt.transform);
-            dirt.Interact(player.transform);
+            DirtManager.instance.CleanDirt(dirt); 
         }
 
 

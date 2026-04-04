@@ -5,9 +5,7 @@ public class Item_DirtSpot : Item_Dirt
 
     public override void Interact(Transform carryPoint)
     {
-        base.Interact(carryPoint);
-        Highlight(false);
-        DirtManager.instance.CleanDirt(this);
+        // Dirt is clean from Tool_Broom
     }
 
     public override void ShowInputUI(bool enable)

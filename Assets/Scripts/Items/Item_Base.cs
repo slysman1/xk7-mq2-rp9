@@ -38,7 +38,7 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
     }
     private Player _player;
 
-    protected Player_Inventory inventory;
+    protected Player_Inventory inventory => player.inventory;
     protected Mesh mesh;
     protected MeshRenderer meshRenderer;
     protected MeshFilter meshFilter;
@@ -66,6 +66,7 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
     private Dictionary<GameObject, int> originalLayers = new Dictionary<GameObject, int>();
 
 
+
     protected virtual void Awake()
     {
         
@@ -85,7 +86,7 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
 
     protected virtual void Start()
     {
-        inventory = player.inventory;
+        
     }
 
     public virtual void Interact(Transform carryPoint)
@@ -446,5 +447,6 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
     }
 
     public void AssignItemData(ItemDataSO itemData) => this.itemData = itemData;
+
 #endif
 }

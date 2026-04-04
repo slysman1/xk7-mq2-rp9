@@ -34,8 +34,6 @@ public class DirtManager : MonoBehaviour
     [SerializeField] private Item_DirtSpotSlot[] dirtSlots;
     [Range(0f, 1f)][SerializeField] private float dirtCreateChance = 0.2f;
 
-    private bool cellIsClean = true;
-
     private void Awake()
     {
         instance = this;
@@ -195,10 +193,9 @@ public class DirtManager : MonoBehaviour
                 UI.instance.taskIndicator.RemoveTarget(web.transform);
 
                 activeWebs.Remove(pair.Key);
-                ItemManager.instance.DestroyItem(web);
 
                 OnWebCleaned?.Invoke();
-                UpdateCleanState();
+                ItemManager.instance.DestroyItem(web);
                 return;
             }
         }
@@ -215,10 +212,9 @@ public class DirtManager : MonoBehaviour
 
 
                 activeDirts.Remove(pair.Key);
-                ItemManager.instance.DestroyItem(dirt);
 
                 OnSpotCleaned?.Invoke();
-                UpdateCleanState();
+                ItemManager.instance.DestroyItem(dirt);
                 return;
             }
         }
@@ -226,12 +222,7 @@ public class DirtManager : MonoBehaviour
 
     // -------------------- STATE --------------------
 
-    private void UpdateCleanState()
-    {
-        cellIsClean = activeWebs.Count == 0 && activeDirts.Count == 0;
-    }
-
-    public bool CellIsClean() => cellIsClean;
+    public bool CellIsClean() => activeWebs.Count < maxWebAmount && activeDirts.Count < maxDirtAmount;
     public int GetWebsCount() => activeWebs.Count;
     public int GetSpotCount() => activeDirts.Count;
 }

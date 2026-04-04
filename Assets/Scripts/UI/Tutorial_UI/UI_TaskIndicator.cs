@@ -106,6 +106,13 @@ public class UI_TaskIndicator : MonoBehaviour
         {
             int index = pair.Value;
             uiIndicators[index].gameObject.SetActive(false);
+
+            if (worldIndicators[index] == null)
+            {
+                Debug.LogError($"worldIndicators[{index}] is destroyed!");
+                continue;
+            }
+
             worldIndicators[index].Detach(transform);
         }
 

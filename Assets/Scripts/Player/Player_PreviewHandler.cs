@@ -4,10 +4,9 @@ using static Alexdev.TweenUtils;
 
 public class Player_PreviewHandler : MonoBehaviour
 {
-    
+
     private Player player;
     private Player_Interaction interaction;
-    private Player_PreviewObject previewObject;
     private Player_Inventory inventory;
     private Player_Raycaster raycaster;
 
@@ -31,18 +30,22 @@ public class Player_PreviewHandler : MonoBehaviour
     private float scrollSpeed => scrollRotationSpeed * 100;
 
     private Quaternion currentPreviewRotation = Quaternion.identity;
-    
+
     public bool isPlacingItem { get; private set; }
 
 
 
-    
+
 
     private Vector3 originalLocalPosition;
     private Quaternion originalLocalRotation;
 
     [Header("Placement Point VFX")]
     [SerializeField] private Transform previwPointVFX;
+
+    [Header("Wall Proximity")]
+    [SerializeField] private float wallProximityRange = 2f;
+    [SerializeField] private float wallProximityOffset = 0.5f;
 
     [Header("Line Renderer VFX")]
     [SerializeField] private LineRenderer lineRenderer;
@@ -57,7 +60,7 @@ public class Player_PreviewHandler : MonoBehaviour
     [Header("Snap To Holder Details")]
     private bool isSnapedToHolder = false;
     private Coroutine snapToHolderCo;
-    
+
 
 
 
@@ -66,14 +69,12 @@ public class Player_PreviewHandler : MonoBehaviour
         player = GetComponent<Player>();
         raycaster = player.raycaster;
         interaction = player.interaction;
-        
+
         inventory = player.inventory;
         lineRendererOriginalColorGradient = lineRenderer.colorGradient;
 
         player.input.Player.RotatePreview.performed += ctx => previewRotateInput = ctx.ReadValue<Vector2>();
         player.input.Player.RotatePreview.canceled += ctx => previewRotateInput = Vector2.zero;
-
-        previewObject = GetComponentInChildren<Player_PreviewObject>(true);
 
         EnableLineRendererColor(false);
     }
@@ -93,6 +94,7 @@ public class Player_PreviewHandler : MonoBehaviour
         if (itemBeingPlaced == null)
             return;
 
+
         raycaster.ForceUpdate();
         raycaster.SetUpdateRate(0.01f);
         EnableLineRendererColor(true);
@@ -106,11 +108,6 @@ public class Player_PreviewHandler : MonoBehaviour
         Vector3 dirToPlayer = transform.position - itemBeingPlaced.transform.position;
         dirToPlayer.y = 0f;
         currentPreviewRotation = Quaternion.LookRotation(dirToPlayer) * Quaternion.Euler(0f, -40f, 0f);
-
-
-        // world rot
-        previewObject.EnablePreviw(itemBeingPlaced);
-        previewObject.SetRotation(currentPreviewRotation);
 
         isPlacingItem = true;
         //UpdatePreview();
@@ -173,7 +170,6 @@ public class Player_PreviewHandler : MonoBehaviour
 
         isSnapedToHolder = false; // ← also explicitly reset this
 
-
         itemBeingPlaced.EnableCamPriority(true);
         itemBeingPlaced.transform.parent = inventory.GetCarryPoint();
         itemBeingPlaced.transform.localPosition = originalLocalPosition;
@@ -181,7 +177,6 @@ public class Player_PreviewHandler : MonoBehaviour
 
         itemBeingPlaced = null;
         isPlacingItem = false;
-        previewObject.DisablePreview();
         EnableLineRendererColor(false);
 
         UI.instance.inputHelp.RemoveInputByKey(KeyType.LMB);
@@ -194,7 +189,6 @@ public class Player_PreviewHandler : MonoBehaviour
         raycaster.SetDefaultUpdateRate();
         itemBeingPlaced = null;
         isPlacingItem = false;
-        previewObject.DisablePreview();
         EnableLineRendererColor(false);
         UI.instance.inputHelp.RemoveInputByKey(KeyType.LMB);
     }
@@ -219,7 +213,7 @@ public class Player_PreviewHandler : MonoBehaviour
                 previwPointVFX.gameObject.SetActive(false);
                 snapToHolderCo = StartCoroutine(SnapItemToHolder(slotTransform));
                 StartCoroutine(SetRotationAs(itemBeingPlaced.transform, slotTransform.rotation.eulerAngles, .2f));
-                
+
             }
         }
         else if (isSnapedToHolder)
@@ -247,16 +241,10 @@ public class Player_PreviewHandler : MonoBehaviour
             return;
 
         Vector3 lastPreviwPosition = GetPreviewPosition();
-        //lastPreviewPosition = GetPreviewPosition();
-        //previewObject.SetPosition(lastPreviwPosition);
 
-
-        previewObject.transform.position = lastPreviwPosition;
         itemBeingPlaced.transform.position = lastPreviwPosition;
         itemBeingPlaced.transform.rotation = currentPreviewRotation;
-
     }
-
 
     private Vector3 GetPreviewPosition()
     {
@@ -269,25 +257,41 @@ public class Player_PreviewHandler : MonoBehaviour
         bool isWallItem = itemBeingPlaced.itemData.placementType == PlacementType.WallOnly;
 
         float forwardPreviewDistance = this.forwardPreviewDist + itemBeingPlaced.itemData.placementForwardOffset;
+        float t = Time.deltaTime * previewSmoothnes;
 
         if (raycaster.HitCombined(out RaycastHit hit))
         {
             if (isWallItem && raycaster.HitWall(out RaycastHit wallHit))
             {
                 Vector3 targetWallPos = wallHit.point + wallHit.normal * wallSnapOffset;
-                lastWallPosition = Vector3.Lerp(lastWallPosition, targetWallPos, Time.deltaTime * previewSmoothnes);
+                lastWallPosition = Vector3.Lerp(lastWallPosition, targetWallPos, t);
                 return lastWallPosition;
+            }
+
+
+
+            bool hitBlocker = raycaster.HitPlacementBlocker(hit);
+            Vector3 pushVector = raycaster.GetWallPushVector(wallProximityRange, wallProximityOffset);
+
+            if (!isWallItem && (pushVector != Vector3.zero || hitBlocker))
+            {
+                float wallHitDistance = Vector3.Distance(origin, hit.point);
+                float wallTargetDistance = Mathf.Min(wallHitDistance, forwardPreviewDistance);
+                currentDistance = Mathf.Lerp(currentDistance, wallTargetDistance, t);
+                Vector3 candidate = origin + dir * currentDistance + Vector3.up * upPreviewDist;
+                candidate += pushVector;
+                return candidate;
             }
 
             // Floor item logic
             float hitDistance = Vector3.Distance(origin, hit.point);
             float targetDistance = Mathf.Min(hitDistance, forwardPreviewDistance);
-            currentDistance = Mathf.Lerp(currentDistance, targetDistance, Time.deltaTime * previewSmoothnes);
+            currentDistance = Mathf.Lerp(currentDistance, targetDistance, t);
             return origin + dir * currentDistance + Vector3.up * upPreviewDist;
         }
 
         // No hit — float in front of camera
-        currentDistance = Mathf.Lerp(currentDistance, forwardPreviewDistance, Time.deltaTime * previewSmoothnes);
+        currentDistance = Mathf.Lerp(currentDistance, forwardPreviewDistance, t);
         return origin + dir * currentDistance + Vector3.up * upPreviewDist;
     }
 
@@ -307,7 +311,6 @@ public class Player_PreviewHandler : MonoBehaviour
             flatNormal.Normalize();
 
             currentPreviewRotation = Quaternion.LookRotation(flatNormal);
-            previewObject.SetRotation(currentPreviewRotation);
             return;
         }
 
@@ -317,7 +320,6 @@ public class Player_PreviewHandler : MonoBehaviour
             return;
 
         currentPreviewRotation *= Quaternion.Euler(0f, delta * scrollSpeed * Time.deltaTime, 0f);
-        previewObject.SetRotation(currentPreviewRotation);
     }
 
     public Vector3 GetQuickDropPosition()
@@ -326,11 +328,10 @@ public class Player_PreviewHandler : MonoBehaviour
             itemBeingPlaced = inventory.GetTopItem();
 
 
+        raycaster.ForceUpdate();
         return GetPreviewPosition();
     }
 
-
-    
     public bool CanPlaceItem()
     {
         return itemBeingPlaced != null && isPlacingItem;// && previewObject.ItemCanBePlaced();
@@ -514,7 +515,7 @@ public class Player_PreviewHandler : MonoBehaviour
 
     private IEnumerator ReturnItemToPreview()
     {
-     
+
         itemBeingPlaced.EnableAsItWereInHolder(false);
 
         yield return StartCoroutine(ArcMoveToVector(

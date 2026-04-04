@@ -18,8 +18,10 @@ public class Player_Raycaster : MonoBehaviour
     [SerializeField] private LayerMask whatIsHoverable;
     [SerializeField] private LayerMask whatIsWall;
     [SerializeField] private LayerMask whatIsGround;
+    [SerializeField] private LayerMask whatIsPlacementBlocker;
 
-    public LayerMask CombinedMask => whatIsInteractable | whatIsWall | whatIsGround;
+    public LayerMask PlacementBlockerMask => whatIsPlacementBlocker;
+    public LayerMask CombinedMask => whatIsInteractable | whatIsWall | whatIsGround | whatIsPlacementBlocker;
     public LayerMask InteractableMask => whatIsInteractable;
     public LayerMask WallMask => whatIsWall;
     public float InteractionRange => interactionRange;
@@ -192,6 +194,11 @@ public class Player_Raycaster : MonoBehaviour
         return hasHoverHit;
     }
 
+    public bool HitPlacementBlocker(RaycastHit hit)
+    {
+        return ((1 << hit.collider.gameObject.layer) & whatIsPlacementBlocker) != 0;
+    }
+
     // --- Floor hit for VFX (called by PreviewHandler) ---
 
     public void UpdateFloorHitFromPosition(Vector3 previewPosition)
@@ -206,5 +213,21 @@ public class Player_Raycaster : MonoBehaviour
         }
 
         hasFloorHit = false;
+    }
+
+    public Vector3 GetWallPushVector(float range, float pushOffset)
+    {
+        Vector3 origin = cam.transform.position;
+
+        if (Physics.Raycast(origin, cam.transform.forward, out RaycastHit hit, range, whatIsWall | whatIsPlacementBlocker))
+        {
+            Vector3 normal = hit.normal;
+            normal.y = 0f;
+            normal.Normalize();
+            float pushAmount = pushOffset - hit.distance + (range - pushOffset);
+            return normal * Mathf.Max(0, pushOffset - hit.distance + (range - hit.distance) * 0.1f);
+        }
+
+        return Vector3.zero;
     }
 }
