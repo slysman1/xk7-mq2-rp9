@@ -17,11 +17,19 @@ public class CurrencyManager : MonoBehaviour
 
     private void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         instance = this;
     }
+
     private IEnumerator Start()
     {
         yield return null;
+        StorageHolder_Coin.OnCoinAdded += AddCurrency;
+        StorageHolder_Coin.OnCoinRemoved += RemoveCurrency;
         AddCurrency(0);
         AddFavour(0);
     }
@@ -130,6 +138,7 @@ public class CurrencyManager : MonoBehaviour
 
     public void RemoveCurrency(int amount)
     {
+        Debug.Log($"RemoveCurrency called with {amount}\n{System.Environment.StackTrace}");
         currentCredit = currentCredit - amount;
         OnCreditUpdate?.Invoke(currentCredit);
     }
@@ -146,4 +155,10 @@ public class CurrencyManager : MonoBehaviour
         OnRespectUpdate?.Invoke(currentRespect);
     }
 
+
+    private void OnDestroy()
+    {
+        StorageHolder_Coin.OnCoinAdded -= AddCurrency;
+        StorageHolder_Coin.OnCoinRemoved -= RemoveCurrency;
+    }
 }

@@ -132,7 +132,7 @@ public class ItemHolder : MonoBehaviour, IHighlightable
             UnregisterSlot(slot);
 
         if (item.currentItemHolder == this)
-            item.SetItemHolder(null);
+            item.ClearItemHolder();
 
 
         currentItems.Remove(item);
@@ -271,7 +271,7 @@ public class ItemHolder : MonoBehaviour, IHighlightable
 
     protected virtual void OnItemRemoved(Item_Base item)
     {
-        item.EnableInHolderLayer(true);
+        item.EnableInHolderLayer(false);
         OnItemAmountChanged?.Invoke();
     }
 

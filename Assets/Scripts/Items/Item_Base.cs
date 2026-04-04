@@ -133,14 +133,16 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
         if (holder == null && currentItemHolder != null)
         {
             var prev = currentItemHolder;
-            currentItemHolder = null; // clear first to break the loop
-            prev.RemoveItem(this);
+            currentItemHolder = null;
+            prev.RemoveItem(this); 
         }
         else
         {
             currentItemHolder = holder;
         }
     }
+
+    public void ClearItemHolder () => currentItemHolder = null;
 
 
 
