@@ -29,21 +29,7 @@ public class TutorialStep_CleanDirtAndWeb : TutorialStep
         UpdateCurrentGoalUI();
     }
 
-    private void OnDirtCleaned()
-    {
-        dirtsCount++;
-        UpdateIndicators();
-        CheckComplete();
-        UpdateCurrentGoalUI();
-    }
-
-    private void OnWebCleaned()
-    {
-        websCount++;
-        UpdateIndicators();
-        CheckComplete();
-        UpdateCurrentGoalUI();
-    }
+   
 
     private bool AllDirtCleaned() => dirtsRequired == 0 || dirtsCount >= dirtsRequired;
 
@@ -63,12 +49,6 @@ public class TutorialStep_CleanDirtAndWeb : TutorialStep
         }
     }
 
-    private void CheckComplete()
-    {
-        bool allDone = dirtsCount >= dirtsRequired && websCount >= websRequired;
-        if (allDone)
-            Complete();
-    }
 
     public override void HandleTask() { }
 
@@ -85,5 +65,36 @@ public class TutorialStep_CleanDirtAndWeb : TutorialStep
             : $"{Localization.GetString("tutorial_step_clean_web")}: {websCount}/{websRequired}";
 
         UI.instance.inGameUI.UpdateCurrentGoal(text);
+    }
+
+    private void OnDirtCleaned()
+    {
+        dirtsCount++;
+        if (CheckComplete())
+            return;   
+        
+        UpdateIndicators();
+        UpdateCurrentGoalUI();
+    }
+
+    private void OnWebCleaned()
+    {
+        websCount++;
+        if (CheckComplete())
+            return;
+
+        UpdateIndicators();
+        UpdateCurrentGoalUI();
+    }
+
+    private bool CheckComplete()
+    {
+        bool allDone = dirtsCount >= dirtsRequired && websCount >= websRequired;
+        if (allDone)
+        {
+            Complete();
+            return true;
+        }
+        return false;
     }
 }

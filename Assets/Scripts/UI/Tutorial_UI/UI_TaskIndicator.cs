@@ -68,39 +68,25 @@ public class UI_TaskIndicator : MonoBehaviour
 
     public void AddTarget(Transform newTarget)
     {
-        Transform target = newTarget;
-
-        if (target == null)
-        {
-            Debug.Log("No indicator target given;");
+        if (newTarget == null) 
             return;
-        }
 
-        if (activeTargets.ContainsKey(target))
-        {
-            Debug.Log("Target is already highlited.");
+        if (activeTargets.ContainsKey(newTarget))
             return;
-        }
 
         int freeIndex = GetFreeIndicatorIndex();
-        if (freeIndex == -1)
+        if (freeIndex == -1) 
         {
             Debug.LogWarning("No free indicators available");
             return;
         }
 
+        TutorialIndicator_Positioner positioner = newTarget.GetComponentInChildren<TutorialIndicator_Positioner>();
+        Transform attachTarget = positioner != null ? positioner.transform : newTarget;
+        bool hasPositioner = positioner != null;
 
-        TutorialIndicator_Positioner indicatorPositioner = target.GetComponentInChildren<TutorialIndicator_Positioner>();
-
-        if(indicatorPositioner != null)
-            target = indicatorPositioner.transform;
-
-        bool hasPositioner = indicatorPositioner != null;
-            
-
-        
-        activeTargets.Add(target, freeIndex);
-        worldIndicators[freeIndex].AttachTo(target,hasPositioner);
+        activeTargets.Add(newTarget, freeIndex);              // key = original target always
+        worldIndicators[freeIndex].AttachTo(attachTarget, hasPositioner);
     }
 
     public void RemoveTarget(Transform target)

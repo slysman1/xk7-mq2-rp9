@@ -59,8 +59,8 @@ public class UI_OnObjectIndicator : MonoBehaviour
 
     public void Detach(Transform newParent)
     {
-        EnableIndicator(false);
         transform.SetParent(newParent);
+        EnableIndicator(false);
     }
 
 
