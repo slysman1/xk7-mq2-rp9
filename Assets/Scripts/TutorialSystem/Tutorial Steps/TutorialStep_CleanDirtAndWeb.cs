@@ -37,7 +37,7 @@ public class TutorialStep_CleanDirtAndWeb : TutorialStep
     {
         TutorialIndicator.Clear();
 
-        if (!AllDirtCleaned())
+        if (AllDirtCleaned() == false)
         {
             TutorialIndicator.HighlightTarget<Tool_Broom>();
             TutorialIndicator.HighlightAllTargets<Item_DirtSpot>();

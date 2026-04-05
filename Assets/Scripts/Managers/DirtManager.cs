@@ -20,6 +20,7 @@ public class DirtManager : MonoBehaviour
     [SerializeField] private int maxWebAmount;
     [SerializeField] private ItemDataSO webPrefab;
     [SerializeField] private Item_DirtWebSlot[] webSlots;
+    [SerializeField] private Item_DirtWebSlot criticalWebSlot; // The specific slot that makes room dirty
     [Range(0f, 1f)][SerializeField] private float webCreateChance = 0.2f;
 
     // -------------------- DIRT --------------------
@@ -106,6 +107,7 @@ public class DirtManager : MonoBehaviour
         StartCoroutine(ScaleLocal(web.transform, Vector3.one, .15f));
 
         activeWebs.Add(slot, web.gameObject);
+        slot.ShowSlot();
     }
 
     private void CreateDirt()
@@ -193,6 +195,7 @@ public class DirtManager : MonoBehaviour
                 UI.instance.taskIndicator.RemoveTarget(web.transform);
 
                 activeWebs.Remove(pair.Key);
+                pair.Key.HideSlot(); 
 
                 OnWebCleaned?.Invoke();
                 ItemManager.instance.DestroyItem(web);
@@ -222,7 +225,19 @@ public class DirtManager : MonoBehaviour
 
     // -------------------- STATE --------------------
 
-    public bool CellIsClean() => activeWebs.Count < maxWebAmount && activeDirts.Count < maxDirtAmount;
+    public bool CellIsClean()
+    {
+        // Room is dirty if:
+        // 1. We've reached max web count
+        // 2. We've reached max dirt count
+        // 3. The critical web slot is occupied
+        bool reachedWebLimit = activeWebs.Count >= maxWebAmount;
+        bool reachedDirtSpotLimit = activeDirts.Count >= maxDirtAmount;
+        bool criticalWebSlotOccupied = criticalWebSlot != null && activeWebs.ContainsKey(criticalWebSlot);
+
+        return !reachedWebLimit && !reachedDirtSpotLimit && !criticalWebSlotOccupied;
+    }
+
     public int GetWebsCount() => activeWebs.Count;
     public int GetSpotCount() => activeDirts.Count;
 }

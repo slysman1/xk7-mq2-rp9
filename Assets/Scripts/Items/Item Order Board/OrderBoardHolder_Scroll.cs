@@ -19,8 +19,7 @@ public class OrderBoardHolder_Scroll : ItemHolder, IHighlightable
         slots = SetupSlots<OrderBoardHolder_ScrollSlot>();
     }
 
-
-
+    
     protected override void OnItemAdded(Item_Base item)
     {
         base.OnItemAdded(item);
@@ -39,6 +38,13 @@ public class OrderBoardHolder_Scroll : ItemHolder, IHighlightable
         OnScrollRemoved?.Invoke(orderScroll.GetOrderData());
     }
 
+    public override void TakeItems(int amount = -1)
+    {
+        if(currentItems.Count > 1)
+            currentItems[0].GetComponent<Item_OrderScroll>().EnableFoldedScroll(true);
+
+        base.TakeItems(amount);
+    }
 
     public void RemoveOrder(OrderDataSO quest)
     {

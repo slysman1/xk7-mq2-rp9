@@ -16,18 +16,15 @@ public class TutorialStep_TalkToGuard_ReportDelivery : TutorialStep_TalkToGuard
     private Item_DeliveryBox deliveryBox;
 
     private int stampsRequired;
-    private int coinsWithStamp;
+    private List<Item_Coin> stampedCoins;
 
     public override void StartTask()
     {
         TutorialIndicator.Clear();
 
-        coinsWithStamp = 0;
         boxOpened = false;
-        deliveryBox = ItemManager.instance.FindFirstItemWithComponent<Item_DeliveryBox>();
-
-        if (orderToStartNext != null)
-            TutorialManager.instance.SetTutorialOrder(orderToStartNext);
+        stampedCoins = new List<Item_Coin>();
+        
         if (dialogueToStartNext != null)
             DialogueManager.instance.SetPriorityDialogue(dialogueToStartNext);
 
@@ -39,7 +36,7 @@ public class TutorialStep_TalkToGuard_ReportDelivery : TutorialStep_TalkToGuard
         onScrollRemoved = _ => CheckConditions();
 
         Item_DeliveryBox.OnBoxOpened += OnBoxOpened;
-        Item_Coin.OnCoinStamped += OnCoinStamped;
+        Item_Coin.OnCoinStamped += CheckConditions;
         DeliveryAreaHolder_AllItems.OnCoinAmountChanged += OnCoinAmountChanged;
         OrderManager.OnOrderCompleted += HandleTask;
         Order_DeliveryManager.OnDeliveryFailed += OnDeliveryFailed;
@@ -47,6 +44,38 @@ public class TutorialStep_TalkToGuard_ReportDelivery : TutorialStep_TalkToGuard
 
         OrderBoardHolder_Scroll.OnScrollAdded += onScrollAdded;
         OrderBoardHolder_Scroll.OnScrollRemoved += onScrollRemoved;
+
+        TutorialManager.instance.StartCoroutine(WaitForDeliveryBox());
+    }
+    private System.Collections.IEnumerator WaitForDeliveryBox()
+    {
+        // Wait until a delivery box with coins exists
+        while (deliveryBox == null)
+        {
+            List<Item_DeliveryBox> deliveryBoxes = ItemManager.instance.FindAllItemsWithComponent<Item_DeliveryBox>();
+
+            foreach (var boxItem in deliveryBoxes)
+            {
+                List<Item_Base> contained = boxItem.GetContainedItems();
+
+                if (contained != null && contained.Count > 0)
+                {
+                    foreach (var containedItem in contained)
+                    {
+                        if (containedItem.GetComponent<Item_Coin>() != null)
+                        {
+                            deliveryBox = boxItem;
+                            break;
+                        }
+                    }
+                }
+
+                if (deliveryBox != null)
+                    break;
+            }
+
+            yield return null; // Wait one frame and try again
+        }
 
         CheckConditions();
     }
@@ -77,23 +106,29 @@ public class TutorialStep_TalkToGuard_ReportDelivery : TutorialStep_TalkToGuard
     private void OnCoinAmountChanged(List<Item_Base> items) => CheckConditions();
     private void OnInventoryUpdate() => CheckConditions();
 
-    private bool AllCoinsStamped() => coinsWithStamp >= stampsRequired;
-
-
     private void CheckConditions()
     {
+        UpdateCoinsListWithNoStamp();
+        TutorialIndicator.Clear();
+
+        bool allCoinsStamped = stampedCoins.Count >= stampsRequired;
         bool hasScroll = OrderManager.instance.trackedOrders.Count > 0;
         bool hasPickedUp = (Player.instance.inventory.TryGetCoinsInHands(out int stamped, out _) && stamped >= neededCoins)
     || delivery.GetItemsInDeliveryArea().Count > 0;
         bool hasCoins = delivery.GetItemsInDeliveryArea().Count >= neededCoins;
 
-        TutorialIndicator.Clear();
 
         if (!boxOpened)
-            TutorialIndicator.HighlightAllTargets<Item_DeliveryBox>();
-        else if (AllCoinsStamped() == false)
+            TutorialIndicator.HighlightTargetTransform(deliveryBox.transform);
+        else if (allCoinsStamped == false)
         {
-            TutorialIndicator.HighlightAllTargets<Item_Coin>();
+            List<Item_Coin> allCoins = ItemManager.instance.FindAllItemsWithComponent<Item_Coin>();
+            List<Transform> coinsToIndicate = new List<Transform>();
+            foreach(var item in allCoins)
+                if(item.hasStamp == false)
+                    coinsToIndicate.Add(item.transform);
+
+            TutorialIndicator.HighlightTargetList(coinsToIndicate);
             TutorialIndicator.HighlightAllTargets<Tool_CoinStamp>();
         }
         else if (!hasScroll)
@@ -117,7 +152,8 @@ public class TutorialStep_TalkToGuard_ReportDelivery : TutorialStep_TalkToGuard
             return;
         
         bool hasScroll = OrderManager.instance.trackedOrders.Count > 0;
-        
+        bool allCoinsStamped = stampedCoins.Count >= stampsRequired;
+
         int currentCoins = delivery != null ? delivery.GetItemsInDeliveryArea().Count : 0;
         bool hasPickedUp = (Player.instance.inventory.TryGetCoinsInHands(out int stamped, out _) && stamped >= neededCoins)
     || delivery.GetItemsInDeliveryArea().Count > 0;
@@ -127,8 +163,8 @@ public class TutorialStep_TalkToGuard_ReportDelivery : TutorialStep_TalkToGuard
 
         if (!boxOpened)
             text = Localization.GetString("tutorial_step_open_box");
-        else if (AllCoinsStamped() == false)
-            text = $"{Localization.GetString("tutorial_step_stamp_coins")}: {coinsWithStamp}/{stampsRequired}";
+        else if (allCoinsStamped == false)
+            text = $"{Localization.GetString("tutorial_step_stamp_coins")}: {stampedCoins.Count}/{stampsRequired}";
         else if (!hasScroll)
             text = Localization.GetString("tutorial_step_accept_order");
         else if (!hasPickedUp && !hasCoins)
@@ -145,7 +181,7 @@ public class TutorialStep_TalkToGuard_ReportDelivery : TutorialStep_TalkToGuard
     {
         base.StopTask();
         Item_DeliveryBox.OnBoxOpened -= OnBoxOpened;
-        Item_Coin.OnCoinStamped -= OnCoinStamped;
+        Item_Coin.OnCoinStamped -= CheckConditions;
         OrderBoardHolder_Scroll.OnScrollAdded -= onScrollAdded;
         OrderBoardHolder_Scroll.OnScrollRemoved -= onScrollRemoved;
         DeliveryAreaHolder_AllItems.OnCoinAmountChanged -= OnCoinAmountChanged;
@@ -162,9 +198,13 @@ public class TutorialStep_TalkToGuard_ReportDelivery : TutorialStep_TalkToGuard
         DialogueManager.instance.SetPriorityDialogue(incorrectDeliveryDialogue);
     }
 
-    private void OnCoinStamped()
+    private void UpdateCoinsListWithNoStamp()
     {
-        coinsWithStamp++;
-        CheckConditions();
+        List<Item_Coin> allCoins = ItemManager.instance.FindAllItemsWithComponent<Item_Coin>();
+        stampedCoins.Clear();
+
+        foreach (var item in allCoins)
+            if(item.hasStamp)
+                stampedCoins.Add(item);
     }
 }

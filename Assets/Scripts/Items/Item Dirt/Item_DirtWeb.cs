@@ -37,7 +37,7 @@ public class Item_DirtWeb : Item_Dirt
 
         if (enable)
         {
-            string key = canBeCleaned ? "input_web_can_clean" : "input_web_cannot_clean";
+            string key = canBeCleaned ? "input_help_web_can_clean" : "input_help_web_cannot_clean";
             UI.instance.inGameUI.inputHelp.AddInput(KeyType.LMB, key);
         }
         else

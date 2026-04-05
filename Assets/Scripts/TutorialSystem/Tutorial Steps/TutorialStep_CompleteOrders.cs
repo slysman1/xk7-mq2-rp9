@@ -12,6 +12,12 @@ public class TutorialStep_CompleteOrders : TutorialStep
     [Space]
     [SerializeField] private int ordersToComplete = 1;
     private int completedOrders;
+
+    [Space]
+    [SerializeField] private bool ignoreOwnedCredits = true;
+    [SerializeField] private int requiredCredits = 0;
+
+    [Space]
     [SerializeField] private float waitTillHelpIndicator = 15f;
     private Coroutine helpCo;
 
@@ -22,8 +28,22 @@ public class TutorialStep_CompleteOrders : TutorialStep
 
         if (targetUpgrade != null)
         {
-            int ordersNeeded = OrderManager.instance.OrdersNeededToReach(targetUpgrade.upgradeCost);
-            ordersToComplete = ordersNeeded;
+            int upgradeCost = targetUpgrade.upgradeCost;
+
+            if (!ignoreOwnedCredits)
+            {
+                // Calculate how many MORE credits needed after what's already in the room
+                int ownedCredits = GetTotalCreditsInRoom();
+                int creditsNeeded = Mathf.Max(0, upgradeCost - ownedCredits);
+
+                // Calculate how many orders needed to get those credits
+                ordersToComplete = OrderManager.instance.OrdersNeededToReach(creditsNeeded);
+            }
+            else
+            {
+                // Original behavior - calculate based on full upgrade cost
+                ordersToComplete = OrderManager.instance.OrdersNeededToReach(upgradeCost);
+            }
         }
 
         if (itemsToInject?.Count > 0)
@@ -75,6 +95,19 @@ public class TutorialStep_CompleteOrders : TutorialStep
         TutorialIndicator.HighlightAllTargets<Order_RequestButton>();
     }
 
+    private int GetTotalCreditsInRoom()
+    {
+        int total = 0;
 
+        // Use ItemManager's existing tracking instead of FindObjectsByType
+        List<Item_Coin> allCoins = ItemManager.instance.FindAllItemsWithComponent<Item_Coin>();
+
+        foreach (var coin in allCoins)
+        {
+            total += coin.GetCoinValue();
+        }
+
+        return total;
+    }
 
 }

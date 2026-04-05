@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TutorialManager : MonoBehaviour
@@ -43,7 +44,7 @@ public class TutorialManager : MonoBehaviour
     {
         if (stepIndex >= tutorial.steps.Length)
         {
-         //   UI.instance.inGameUI.UpdateCurrentGoal("");
+            //   UI.instance.inGameUI.UpdateCurrentGoal("");
             return;
         }
 
@@ -77,13 +78,13 @@ public class TutorialManager : MonoBehaviour
 
     private void CreateItems(ItemDataSO[] items)
     {
-        if(items == null || items.Length == 0)
+        if (items == null || items.Length == 0)
             return;
 
         if (items.Length > 0 && items[0] == null)
             return;
 
-        deliveryManager.SendItems(items);
+        deliveryManager.CreateDeliveryBox(items.ToList());
     }
 
     public bool CompletedStepNeededToTakeOrders()
@@ -95,11 +96,7 @@ public class TutorialManager : MonoBehaviour
     }
 
     public void SetTutorialOrder(OrderDataSO orderData) => tutorialOrder = orderData;
-    public OrderDataSO GetTutorialOrder(out OrderDataSO tutorialOrder)
-    {
-        tutorialOrder = this.tutorialOrder; // assign your stored quest
-        return tutorialOrder;
-    }
+    public OrderDataSO GetTutorialOrder() => tutorialOrder;
 
- 
+
 }

@@ -75,7 +75,7 @@ public class ItemHolder : MonoBehaviour, IHighlightable
         }
     }
 
-    public void TakeItems(int amount = -1)
+    public virtual void TakeItems(int amount = -1)
     {
         if (inventory.takingItemsCo != null || inventory.addingItemsCo != null)
             return;
@@ -171,6 +171,9 @@ public class ItemHolder : MonoBehaviour, IHighlightable
         if (item == null)
             return;
 
+        if (transform.IsChildOf(item.transform))
+            return;
+
         if (item.currentItemHolder == this)
             return;
 
@@ -203,7 +206,7 @@ public class ItemHolder : MonoBehaviour, IHighlightable
 
         if (IsValidItem(item) == false)
         {
-            Debug.Log("Item is not valid - " + item.gameObject.name);
+            Debug.Log(gameObject.name + " holder says: " + "Item is not valid - " + item.gameObject.name);
             return false;
         }
 

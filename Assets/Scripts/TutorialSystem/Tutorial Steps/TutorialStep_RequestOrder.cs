@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class TutorialStep_RequestOrder : TutorialStep
 {
+    [SerializeField] protected OrderDataSO orderToStartNext;
 
     public override void HandleTask()
     {
@@ -17,6 +18,8 @@ public class TutorialStep_RequestOrder : TutorialStep
         base.StartTask();
 
 
+        if (orderToStartNext != null)
+            TutorialManager.instance.SetTutorialOrder(orderToStartNext);
 
         TutorialIndicator.HighlightAllTargets<Order_RequestButton>();
         Order_RequestButton.OnOrderRequested += HandleTask;

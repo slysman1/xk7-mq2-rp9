@@ -8,14 +8,9 @@ public class Order_RequestButton : Interaction_Button
 {
     public static event Action OnOrderRequested;
 
-    private DeliveryManager deliveryManager => DeliveryManager.instance;
     private DirtManager dirtManager => DirtManager.instance;
-    private TutorialManager tutorialManager => TutorialManager.instance;
     protected UI_OnObjectIndicator objectIndicator;
 
-
-
-    public float deliveryDelay = 4;
 
     [Header("References")]
     [SerializeField] private Transform bell;
@@ -42,43 +37,20 @@ public class Order_RequestButton : Interaction_Button
             return;
 
         bellCo = StartCoroutine(RingBellCo());
+        OnOrderRequested?.Invoke();
 
 
-        if (tutorialManager.CompletedStepNeededToTakeOrders() == false)
-        {
-            Debug.Log("Need to progress further");
-            return;
-        }
-
-        if (tutorialManager.GetTutorialOrder(out OrderDataSO tutorialOrder) != null)
-        {
-            OrderManager.instance.StartTutorialOrder(tutorialOrder);
-            OnOrderRequested?.Invoke();
-            Debug.Log("m creting a tutorial order yo");
-            return;
-        }
-
+      
         if (dirtManager.CellIsClean() == false)
         {
             Debug.Log("Need to clean cell");
             return;
         }
 
-        StartCoroutine(QuestBTNCo());
-    }
-
-    private IEnumerator QuestBTNCo()
-    {
-        yield return new WaitForSeconds(deliveryDelay);
-
-        if (deliveryManager.HasPriorityDelivery())
-        {
-            deliveryManager.CreatePriorityDelivery();
-            yield break;
-        }
 
         OrderManager.instance.RequestNextOrder();
         OnOrderRequested?.Invoke();
+        
     }
 
     private IEnumerator RingBellCo()

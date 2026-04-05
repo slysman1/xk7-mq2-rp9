@@ -72,36 +72,14 @@ public class Item_DeliveryBox : Item_Base
 
     }
 
-    public void SetupBox(List<GameObject> items)
+    public void SetupBox(List<Item_Base> items)
     {
-        if (items == null)
+        if (items == null || items.Count == 0)
             return;
 
-        containedItems = new List<Item_Base>();
+        containedItems = items ?? new List<Item_Base>();
         unpacked = false;
-
-        foreach (var gameObject in items)
-        {
-            if (gameObject == null)
-            {
-                Debug.Log("There was no game object in items");
-                continue;
-            }
-
-            Item_Base item = gameObject.GetComponent<Item_Base>();
-
-            if (item == null)
-            {
-                Debug.LogWarning($"GameObject {gameObject.name} does not have an Item_Base component.");
-                continue;
-            }
-
-            item.EnableKinematic(true);
-            item.SetVelocity(Vector3.zero);
-            item.gameObject.SetActive(false);
-            item.transform.SetParent(transform, true);
-            containedItems.Add(item);
-        }
+        Debug.Log("list was set");
     }
 
     public void ScaleUp(float maxScale, float scaleSpeed)
@@ -184,13 +162,18 @@ public class Item_DeliveryBox : Item_Base
 
     public override void ShowInputUI(bool enable)
     {
+        base.ShowInputUI(enable);
         if (enable)
         {
-            UI.instance.inGameUI.inputHelp.AddInput(KeyType.LMB, "input_delivery_box_open");
+            UI.instance.inGameUI.inputHelp.AddInput(KeyType.LMB, "input_delivery_box_open",true);
 
-            //if (player.inventory.CanPickup(this) && TutorialManager.instance.currentTask != blockingTask)
-            //    UI.instance.inGameUI.inputHelp.AddInput(KeyType.LMB_Hold, "input_pickup_hold");
-
+            if (inventory.CanPickup(this))
+            {
+                if (itemData.pickupType == PickupType.Hold)
+                    inputHelp.AddInput(KeyType.LMB_Hold, "input_pickup_hold");
+                else
+                    inputHelp.AddInput(KeyType.LMB, "input_pickup_click");
+            }
         }
         else
             UI.instance.inGameUI.inputHelp.RemoveInput();

@@ -18,6 +18,9 @@ public class UI_TaskIndicator : MonoBehaviour
     [SerializeField] private float edgeDistance = 0f;
 
     // Internal mapping: target -> indicator index
+
+    [Header("Debug")]
+    [SerializeField] private List<Transform> currentTargets = new List<Transform>(); // ← ADD THIS
     private readonly Dictionary<Transform, int> activeTargets = new();
 
     private void Awake()
@@ -43,6 +46,8 @@ public class UI_TaskIndicator : MonoBehaviour
 
             worldIndicators[i] = worldLogic;
             worldIndicators[i].EnableIndicator(false);
+
+
         }
     }
 
@@ -87,6 +92,8 @@ public class UI_TaskIndicator : MonoBehaviour
 
         activeTargets.Add(newTarget, freeIndex);              // key = original target always
         worldIndicators[freeIndex].AttachTo(attachTarget, hasPositioner);
+
+        currentTargets.Add(newTarget); // ← ADD THIS
     }
 
     public void RemoveTarget(Transform target)
@@ -98,6 +105,7 @@ public class UI_TaskIndicator : MonoBehaviour
         worldIndicators[index].Detach(transform);
 
         activeTargets.Remove(target);
+        currentTargets.Remove(target); // ← ADD THIS
     }
 
     public void ClearAll()
@@ -117,6 +125,7 @@ public class UI_TaskIndicator : MonoBehaviour
         }
 
         activeTargets.Clear();
+        currentTargets.Clear();
     }
 
     // =====================================================

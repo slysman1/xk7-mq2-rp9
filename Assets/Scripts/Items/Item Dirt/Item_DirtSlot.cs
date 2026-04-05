@@ -7,7 +7,16 @@ public class Item_DirtSlot : MonoBehaviour
     protected MeshRenderer meshRenderer => GetComponent<MeshRenderer>();
 
 
-    public void HideSlot() => meshRenderer.enabled = false;
+    public void HideSlot()
+    {
+        meshRenderer.enabled = false;
+        gameObject.SetActive(false);
+    }
+    public void ShowSlot()
+    {
+        gameObject.SetActive(true);
+        meshRenderer.enabled = false; // Keep mesh hidden but slot active
+    }
 
     public DirtDetails GetDetails()
     {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -6,10 +7,11 @@ using UnityEngine;
 public class OrderManager : MonoBehaviour
 {
     public static event Action OnOrderCompleted;
-    private Animator anim;
     private ItemManager itemManager => ItemManager.instance;
+    private TutorialManager tutorialManager => TutorialManager.instance;
     public static OrderManager instance;
 
+    [SerializeField] private float deliveryDelay = 1.5f;
     [SerializeField] private int ordersPerCall = 1;
     [SerializeField] private int maxConcurrentOrders = 4;
     [SerializeField] private ItemDataSO orderScrollData;
@@ -22,7 +24,7 @@ public class OrderManager : MonoBehaviour
     private List<OrderDataSO> orderPool = new();
     [SerializeField] private List<OrderDataSO> allQuests = new();
     public int ordersDelivered { get; private set; } = 0;
-    private Dictionary<int, List<ItemDataSO>> pendingInjections = new(); 
+    private Dictionary<int, List<ItemDataSO>> pendingInjections = new();
 
     private void Awake()
     {
@@ -42,60 +44,59 @@ public class OrderManager : MonoBehaviour
 #endif
     }
 
-    public void ResetQuestPool()
-    {
-        orderPool.Clear();
-    }
-
-    public void StartTutorialOrder(OrderDataSO tutorialOrder)
-    {
-        if (tutorialOrder == null)
-        {
-            Debug.Log("Tutorial order is not assigned!");
-            return;
-        }
-
-        remainingOrders.Add(tutorialOrder);
-        CreateOrder(tutorialOrder);
-
-        TutorialManager.instance.SetTutorialOrder(null);
-    }
-
     public void RequestNextOrder()
     {
-        if (remainingOrders.Count >= maxConcurrentOrders)
-            return;
-
-        OrderDataSO order = GetNextOrder();
-
-        if (order == null)
-        {
-            Debug.LogWarning("⚠️ No orders available in pool.");
-            return;
-        }
-
-        remainingOrders.Add(order);
+        StartCoroutine(RequestNextOrderCo());
     }
 
-    private OrderDataSO GetNextOrder()
+    private IEnumerator RequestNextOrderCo()
     {
+        yield return new WaitForSeconds(deliveryDelay);
+
+
+        OrderDataSO tutorialOrder = tutorialManager.GetTutorialOrder();
+
+        if (tutorialOrder != null)
+        {
+            remainingOrders.Add(tutorialOrder);
+            CreateOrder(tutorialOrder);
+            yield break;
+        }
+
+
+        if (tutorialManager.CompletedStepNeededToTakeOrders() == false)
+        {
+            Debug.Log("Need to progress further");
+            yield break;
+        }
+
+        if (remainingOrders.Count >= maxConcurrentOrders)
+            yield break;
+
+        // Refill pool if needed
         RefillOrdersIfNeeded();
 
         if (orderPool.Count == 0)
-            return null;
+        {
+            Debug.LogWarning("⚠️ No orders available in pool.");
+            yield break;
+        }
 
+        // Get next order from pool
         OrderDataSO next = orderPool[0];
         orderPool.RemoveAt(0);
 
+        // Check for injected items
         pendingInjections.TryGetValue(ordersDelivered, out List<ItemDataSO> injected);
 
-        if (injected != null) 
+        if (injected != null)
             pendingInjections.Remove(ordersDelivered);
 
         ordersDelivered++;
-        CreateOrder(next, injected);  // ← CreateOrder moves here from RequestNextOrder
 
-        return next;
+        // Add to tracking and create delivery
+        remainingOrders.Add(next);
+        CreateOrder(next, injected);
     }
 
     private void RefillOrdersIfNeeded()
@@ -114,6 +115,12 @@ public class OrderManager : MonoBehaviour
             orderPool = questsForUpgrade.OrderBy(_ => UnityEngine.Random.value).ToList();
         }
     }
+
+    public void ResetQuestPool()
+    {
+        orderPool.Clear();
+    }
+
 
 
     public void NotifyOrderCompleted(OrderDataSO quest)
@@ -186,6 +193,7 @@ public class OrderManager : MonoBehaviour
             itemManager.CreateItem(orderScrollData).GetComponent<Item_OrderScroll>();
 
         newScroll.SetupScroll(order);
+        newScroll.gameObject.SetActive(false);
 
         return newScroll.gameObject;
     }

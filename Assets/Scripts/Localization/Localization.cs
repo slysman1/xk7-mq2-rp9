@@ -25,7 +25,8 @@ public static class Localization
         "Input_Help_Order_Board",
         "Input_Help_Wooden_Log_Set",
         "Input_Help_Wood_Station",
-        "Input_Help_Coin_Storage"
+        "Input_Help_Coin_Storage",
+        "Input_Help_Torch_Web_Cleanup"
     };
 
     private static Dictionary<string, StringTable> keyCache = new();

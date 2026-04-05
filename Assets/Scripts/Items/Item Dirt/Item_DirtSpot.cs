@@ -17,7 +17,7 @@ public class Item_DirtSpot : Item_Dirt
 
         if (enable)
         {
-            string key = canBeCleaned ? "input_dirt_can_clean" : "input_dirt_cannot_clean";
+            string key = canBeCleaned ? "input_help_dirt_can_clean" : "input_help_dirt_cannot_clean";
             UI.instance.inGameUI.inputHelp.AddInput(KeyType.LMB_Hold, key);
         }
         else

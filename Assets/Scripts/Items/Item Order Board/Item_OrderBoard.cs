@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class Item_OrderBoard : Item_Base
 {
 
@@ -9,11 +11,27 @@ public class Item_OrderBoard : Item_Base
         scrollHolder = GetComponentInChildren<OrderBoardHolder_Scroll>();
     }
 
+    public override void Interact(Transform caller)
+    {
+        if (player.interaction.QuickPressLMB())
+        {
+            scrollHolder.TakeItems(1);
+        }
+        else if (itemCanBePickedUp)
+        {
+            base.Interact(caller); // hold — pickup
+        }
+    }
+
     public override void Highlight(bool enable)
     {
         base.Highlight(enable);
         ShowInputUI(enable);
-        scrollHolder.ShowSlots(true);
+
+        if (scrollHolder.currentItems.Count <= 0 && enable == true)
+            scrollHolder.ShowSlots(true);
+        else
+            scrollHolder.ShowSlots(false);
     }
 
     public override void ShowInputUI(bool enable)
