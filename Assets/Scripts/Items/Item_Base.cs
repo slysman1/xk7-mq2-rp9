@@ -328,8 +328,6 @@ public class Item_Base : MonoBehaviour, IInteractable, IHighlightable
     {
         return Vector3.Angle(transform.up, Vector3.up) < 5f; // tolerance in degrees
     }
-
-
     public virtual int GetMaxStack() => itemData.maxStackInHand;
     public float GetStackYOffset() => itemData.itemStackYoffset;
     public Vector3 GetInHandPosition() => itemData.inHandPosition;

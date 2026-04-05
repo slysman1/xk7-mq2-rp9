@@ -3,9 +3,10 @@ using UnityEngine;
 public class Item_MetalBar : Item_Base
 {
     [SerializeField] private ItemDataSO productionResult;
-
+    [SerializeField] private int coinsToMake;
 
     public ItemDataSO GetProductionResult() => productionResult;
+    public int GetCoinsAmountInBar() => coinsToMake;
 
 
     public override void ShowInputUI(bool enable)

@@ -15,7 +15,7 @@ public class Item_Tool : Item_Base
     [SerializeField] protected float arcMovement = .4f;
     [Range(0, 1)]
     [SerializeField] protected float arcMoveDur = .2f;
-    protected Coroutine interactionCo;
+    public Coroutine interactionCo { get ; protected set; }
 
     
 

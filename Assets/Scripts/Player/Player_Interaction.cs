@@ -228,6 +228,7 @@ public class Player_Interaction : MonoBehaviour
             if (inventory.DoingAction())
                 yield break;
             
+            
 
             if (CanAddItemsToHolder(out ItemHolder holder))
             {
@@ -291,5 +292,6 @@ public class Player_Interaction : MonoBehaviour
 
         return null;
     }
+
 
 }

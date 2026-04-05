@@ -22,4 +22,5 @@ public class Item_WallTorch : Item_Base
             base.Interact(caller); // hold — pickup
         }
     }
+
 }

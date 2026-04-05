@@ -28,6 +28,7 @@ public class Player_Inventory : MonoBehaviour
     [SerializeField] private float dropDuration = .2f;
 
     public Coroutine addingItemsCo { get; private set; }
+    public Coroutine removingItemsCo { get; private set; }
     public Coroutine takingItemsCo;// { get; private set; }
 
     private void Awake()
@@ -141,7 +142,7 @@ public class Player_Inventory : MonoBehaviour
             Quaternion rotation = placementPoint != null ? placementPoint.rotation : item.transform.rotation;
 
             Vector3 newPosition = position + new Vector3(0, i * item.GetStackYOffset());
-            RemoveItem(item, newPosition, rotation, itemsToModify, forceDynamic);
+            RemoveItem(item, newPosition, rotation, itemsToModify, forceDynamic,.5f);
         }
 
         itemsToModify.Clear();
@@ -164,7 +165,7 @@ public class Player_Inventory : MonoBehaviour
         if (itemsToModify.Contains(item) == false)
             itemsToModify.Add(item);
 
-        StartCoroutine(AddItemCo(item));
+        addingItemsCo = StartCoroutine(AddItemCo(item));
         //topItem = item;
     }
 
@@ -192,16 +193,18 @@ public class Player_Inventory : MonoBehaviour
 
         Item_CarryTool carryTool = carryPoint.GetComponentInParent<Item_CarryTool>();
         carryTool?.OnItemGetCarriedByTool(item);
+
+        addingItemsCo = null;
     }
 
-    private void RemoveItem(Item_Base item, Vector3 position, Quaternion rotation, List<Item_Base> itemsToModify = null, bool forceDynamic = false)
+    private void RemoveItem(Item_Base item, Vector3 position, Quaternion rotation, List<Item_Base> itemsToModify = null, bool forceDynamic = false, float interactionDelay = 0)
     {
-        StartCoroutine(RemoveItemCo(item, position, rotation, itemsToModify, forceDynamic));
+         removingItemsCo = StartCoroutine(RemoveItemCo(item, position, rotation, itemsToModify, forceDynamic));
     }
 
     private void RemoveItem(Item_Base item, Vector3 position, Quaternion rotation, List<Item_Base> itemsToModify = null, float interactionDelay = 0)
     {
-        StartCoroutine(RemoveItemCo(item, position, rotation, itemsToModify,false,interactionDelay));
+        removingItemsCo = StartCoroutine(RemoveItemCo(item, position, rotation, itemsToModify,false,interactionDelay));
     }
 
 
@@ -228,6 +231,7 @@ public class Player_Inventory : MonoBehaviour
         if (carriedItems.Count == 0)
             weightInHands = ItemWeightType.None;
 
+        removingItemsCo = null;
         OnItemAmountUpdate?.Invoke();
     }
 
@@ -330,6 +334,17 @@ public class Player_Inventory : MonoBehaviour
 
         return stampedCoins > 0 || unstampedCoins > 0;
     }
-    public bool DoingAction() => addingItemsCo != null || takingItemsCo != null;
+    public bool DoingAction()
+    {
+        // Check inventory animations
+        if (addingItemsCo != null || takingItemsCo != null || removingItemsCo != null)
+            return true;
 
+        // Check if tool is mid-interaction
+        Item_Tool tool = GetToolInHand();
+        if (tool != null && tool.interactionCo != null)
+            return true;
+
+        return false;
+    }
 }

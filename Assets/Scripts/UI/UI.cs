@@ -54,10 +54,10 @@ public class UI : MonoBehaviour
 
         player.input.UI.Cancel.performed += ctx =>
         {
-            if (pauseMenuUI.canvasGroup.alpha == 1)
-                OpenInGameUI();
-            else
+            if (inGameUI.IsActive())
                 OpenPauseUI();
+            else
+                OpenInGameUI();
         };
 
         player.input.UI.OpenMerchant.performed += ctx => OpenShopUI();

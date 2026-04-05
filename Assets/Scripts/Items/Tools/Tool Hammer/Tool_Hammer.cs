@@ -85,9 +85,9 @@ public class Tool_Hammer : Item_Tool
                 template.HitTemperPoint(player.raycaster.HitPoint, hitPower);
             }
             else
-            { 
-            
-                if (template.itemData.creditValue == 10 && template.EmptyPlate())
+            {
+
+                if (template.GetTotalCoinSlots() == 10 && template.EmptyPlate())
                 {
                     itemCombiner.TryConvertToBars(template);
                     return;

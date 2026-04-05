@@ -95,15 +95,44 @@ public class Item_DeliveryBox : Item_Base
 
     private void Unpack()
     {
-
         OnBoxOpened?.Invoke();
         EnableCollider(false);
         UI.instance.taskIndicator.RemoveTarget(transform);
         Audio.PlaySFX("deliveryBox_open", transform);
 
-        bool needCameraShake = false;
+        bool needCameraShake = SpawnContainedItems();
 
-        // Crate footprint (ignore tilt)
+        unpacked = true;
+
+        if (needCameraShake)
+            Player.instance.cameraEffects.Shake(shakeDur, shakeStr);
+
+        ItemManager.instance.DestroyItem(this);
+    }
+
+    private bool SpawnContainedItems()
+    {
+        bool needCameraShake = false;
+        var positions = CalculateGridPositions();
+
+        for (int i = 0; i < containedItems.Count; i++)
+        {
+            var item = containedItems[i];
+            item.transform.SetParent(null, true);
+            item.transform.position = positions[i];
+            item.transform.rotation = Quaternion.identity;
+            item.gameObject.SetActive(true);
+            item.OnItemUnpack();
+
+            if (item.GetItemWeightType() == ItemWeightType.Heavy)
+                needCameraShake = true;
+        }
+
+        return needCameraShake;
+    }
+
+    private Vector3[] CalculateGridPositions()
+    {
         var col = GetComponent<BoxCollider>();
         var centre = transform.position;
         var right = Vector3.ProjectOnPlane(transform.right, Vector3.up).normalized;
@@ -111,53 +140,29 @@ public class Item_DeliveryBox : Item_Base
         float width = col.size.x * transform.lossyScale.x;
         float depth = col.size.z * transform.lossyScale.z;
 
-        // Square-ish grid
         int n = containedItems.Count;
         int perRow = Mathf.CeilToInt(Mathf.Sqrt(n));
         float stepX = width / perRow;
         float stepZ = depth / perRow;
+
+        var positions = new Vector3[n];
         int index = 0;
 
         for (int z = 0; z < perRow && index < n; z++)
         {
             for (int x = 0; x < perRow && index < n; x++)
             {
-                // local offset centred on crate
                 var local = new Vector3(
                     (x + 0.5f) * stepX - width * 0.5f,
                     0,
                     (z + 0.5f) * stepZ - depth * 0.5f);
 
-                // convert to world space
                 var pos = centre + right * local.x + forward * local.z;
-
-                // drop to the floor
-                if (Physics.Raycast(pos + Vector3.up * 2f, Vector3.down, out var hit, 5f, floorMask))
-                    pos = hit.point;
-
-                if (containedItems.Count > 0)
-                {
-                    var item = containedItems[index++];
-                    item.transform.SetParent(null, true);     // detach
-                    item.transform.position = pos + Vector3.up * lift;
-                    item.transform.rotation = Quaternion.identity;
-                    item.gameObject.SetActive(true);          // in case it was hidden
-                    item.OnItemUnpack();
-
-
-                    if (item.GetItemWeightType() == ItemWeightType.Heavy)
-                        needCameraShake = true;
-                }
+                positions[index++] = pos + Vector3.up * lift;
             }
         }
 
-        unpacked = true;
-
-        if (needCameraShake)
-            Player.instance.cameraEffects.Shake(shakeDur, shakeStr);
-
-
-        ItemManager.instance.DestroyItem(this);
+        return positions;
     }
 
     public override void ShowInputUI(bool enable)

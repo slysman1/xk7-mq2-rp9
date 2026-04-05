@@ -233,6 +233,22 @@ public class Item_CoinTemplate : Item_Base
 
         return null;
     }
+    public int GetTotalCoinSlots()
+    {
+        return coinSlots != null ? coinSlots.Length : 0;
+    }
+
+    public int GetCurrentPlateValue()
+    {
+        int value = 0;
+
+        foreach (var slot in coinSlots)
+            if (slot.gameObject.activeSelf)
+                value = value + coinPrefab.creditValue;
+
+        return value;
+    }
+
 
     public GameObject GetNewTemperPoint()
     {

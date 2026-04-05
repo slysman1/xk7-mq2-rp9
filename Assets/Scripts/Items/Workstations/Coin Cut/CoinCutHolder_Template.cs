@@ -34,4 +34,6 @@ public class CoinCutHolder_Template : ItemHolder, IHighlightable
         Audio.PlaySFX("plate_added", transform);
         currentTemplate = item as Item_CoinTemplate;
     }
+
+    
 }

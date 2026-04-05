@@ -11,10 +11,17 @@ public class TutorialStep_GetUpgrade : TutorialStep
     public override void StartTask()
     {
         base.StartTask();
-        onUpgradeBuy = upgrade => { if (upgrade == targetUpgrade) Complete(); };
+        onUpgradeBuy = upgrade =>
+        {
+            if (upgrade == targetUpgrade)
+                Complete();
+
+        };
         UI_UpgradeSlot.OnUpgradeBuy += onUpgradeBuy;
         UpdateCurrentGoalUI();
     }
+
+
 
     public override void StopTask()
     {

@@ -32,20 +32,25 @@ public class OrderManager : MonoBehaviour
 
         OrderBoardHolder_Scroll.OnScrollAdded += AddOrder;
         OrderBoardHolder_Scroll.OnScrollRemoved += RemoveOrder;
-        //CollectData();
+
+      //  CollectData();
     }
 
 
+#if UNITY_EDITOR
     [ContextMenu("Collect data")]
     public void CollectData()
     {
-#if UNITY_EDITOR
         allQuests = Alexdev.DataUtils.GetData<OrderDataSO>().ToList();
-#endif
     }
+#endif
 
     public void RequestNextOrder()
     {
+        maxConcurrentOrders = ItemManager.instance.FindAllItemsWithComponent<Item_OrderBoard>().Count;
+        if (remainingOrders.Count >= maxConcurrentOrders)
+            return;
+
         StartCoroutine(RequestNextOrderCo());
     }
 
@@ -53,16 +58,15 @@ public class OrderManager : MonoBehaviour
     {
         yield return new WaitForSeconds(deliveryDelay);
 
-
         OrderDataSO tutorialOrder = tutorialManager.GetTutorialOrder();
 
         if (tutorialOrder != null)
         {
             remainingOrders.Add(tutorialOrder);
+            tutorialManager.SetTutorialOrder(null);
             CreateOrder(tutorialOrder);
             yield break;
         }
-
 
         if (tutorialManager.CompletedStepNeededToTakeOrders() == false)
         {
@@ -70,21 +74,19 @@ public class OrderManager : MonoBehaviour
             yield break;
         }
 
-        if (remainingOrders.Count >= maxConcurrentOrders)
-            yield break;
+        
 
-        // Refill pool if needed
-        RefillOrdersIfNeeded();
+        List<OrderDataSO> pool = GetOrderPool(); // ← Call ONCE, store in local var
 
-        if (orderPool.Count == 0)
+        if (pool.Count == 0)
         {
             Debug.LogWarning("⚠️ No orders available in pool.");
             yield break;
         }
 
         // Get next order from pool
-        OrderDataSO next = orderPool[0];
-        orderPool.RemoveAt(0);
+        OrderDataSO next = pool[0];
+        pool.RemoveAt(0);
 
         // Check for injected items
         pendingInjections.TryGetValue(ordersDelivered, out List<ItemDataSO> injected);
@@ -99,29 +101,10 @@ public class OrderManager : MonoBehaviour
         CreateOrder(next, injected);
     }
 
-    private void RefillOrdersIfNeeded()
-    {
-        if (orderPool.Count == 0)
-        {
-            UpgradeType currentUpgradeType = UpgradeManager.instance.currentUpgrade.upgradeType;
-            List<OrderDataSO> questsForUpgrade = allQuests.FindAll(q => q.neededUpgradeType == currentUpgradeType);
-
-            if (questsForUpgrade == null || questsForUpgrade.Count == 0)
-            {
-                Debug.LogError($"❌ No quests found for upgrade {currentUpgradeType}");
-                return;
-            }
-
-            orderPool = questsForUpgrade.OrderBy(_ => UnityEngine.Random.value).ToList();
-        }
-    }
-
     public void ResetQuestPool()
     {
         orderPool.Clear();
     }
-
-
 
     public void NotifyOrderCompleted(OrderDataSO quest)
     {
@@ -156,6 +139,7 @@ public class OrderManager : MonoBehaviour
     {
         int accumulated = 0;
         int count = 0;
+        List<OrderDataSO> orderPool = GetOrderPool();
 
         foreach (OrderDataSO order in orderPool)
         {
@@ -187,6 +171,25 @@ public class OrderManager : MonoBehaviour
 
     public bool HasActiveQuests() => remainingOrders.Count > 0;
 
+    public List<OrderDataSO> GetOrderPool()
+    {
+        if (orderPool == null || orderPool.Count == 0)
+        {
+            UpgradeType currentUpgradeType = UpgradeManager.instance.currentUpgrade.upgradeType;
+            List<OrderDataSO> questsForUpgrade = allQuests.FindAll(q => q != null && q.neededUpgradeType == currentUpgradeType);
+
+            if (questsForUpgrade == null || questsForUpgrade.Count == 0)
+            {
+                Debug.LogError($"❌ No quests found for upgrade {currentUpgradeType}");
+                return new List<OrderDataSO>(); // return empty list
+            }
+
+            orderPool = questsForUpgrade.OrderBy(_ => UnityEngine.Random.value).ToList();
+        }
+
+        return orderPool;
+    }
+
     private GameObject GetNewScroll(OrderDataSO order)
     {
         Item_OrderScroll newScroll =
@@ -202,6 +205,5 @@ public class OrderManager : MonoBehaviour
     {
         pendingInjections[poolIndex] = items;
     }
-
 
 }

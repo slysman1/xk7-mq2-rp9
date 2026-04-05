@@ -122,6 +122,8 @@ public class Player_PreviewHandler : MonoBehaviour
             return;
 
 
+        UpdatePreview();
+
         if (interaction.CanAddItemsToHolder(out var holder))
         {
             if (holder.CanSnapPreview() == false)
@@ -139,7 +141,6 @@ public class Player_PreviewHandler : MonoBehaviour
             return;
         }
 
-        UpdatePreview();
 
         if (IsHoldingWallItem() && raycaster.HitWall(out _) == false)
             inventory.InstantReleaseAllItems(GetQuickDropPosition());

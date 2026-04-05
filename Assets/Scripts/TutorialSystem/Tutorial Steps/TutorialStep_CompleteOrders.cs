@@ -99,12 +99,28 @@ public class TutorialStep_CompleteOrders : TutorialStep
     {
         int total = 0;
 
-        // Use ItemManager's existing tracking instead of FindObjectsByType
+        // Count coins
         List<Item_Coin> allCoins = ItemManager.instance.FindAllItemsWithComponent<Item_Coin>();
-
         foreach (var coin in allCoins)
         {
             total += coin.GetCoinValue();
+        }
+
+        // Count metal bars
+        List<Item_MetalBar> allBars = ItemManager.instance.FindAllItemsWithComponent<Item_MetalBar>();
+        foreach (var bar in allBars)
+        {
+            if (bar.itemData != null)
+                total += bar.itemData.creditValue;
+        }
+
+        // Count metal plates
+        List<Item_CoinTemplate> allPlates = ItemManager.instance.FindAllItemsWithComponent<Item_CoinTemplate>();
+
+        foreach (var plate in allPlates)
+        {
+            if (plate.itemData != null)
+                total += plate.GetCurrentPlateValue();
         }
 
         return total;
