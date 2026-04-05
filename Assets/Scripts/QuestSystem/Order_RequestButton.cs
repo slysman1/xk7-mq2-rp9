@@ -77,7 +77,7 @@ public class Order_RequestButton : Interaction_Button
             yield break;
         }
 
-        OrderManager.instance.StartNewOrderSet();
+        OrderManager.instance.RequestNextOrder();
         OnOrderRequested?.Invoke();
     }
 

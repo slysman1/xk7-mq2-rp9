@@ -7,6 +7,7 @@ public abstract class TutorialStep : ScriptableObject
     public ItemDataSO[] taskReward;
     public ItemDataSO[] startingItems;
 
+    public Action<TutorialStep> OnCompleted; // notify system
     [SerializeField] protected DialogueNodeSO dialogueToStartNext;
     [SerializeField] protected OrderDataSO orderToStartNext;
 
@@ -28,8 +29,8 @@ public abstract class TutorialStep : ScriptableObject
 
     protected virtual void Complete()
     {
+        OnCompleted?.Invoke(this);
         StopTask();
-        TutorialManager.instance.OnTaskCompleted(this);
     }
 
     public abstract void UpdateCurrentGoalUI();

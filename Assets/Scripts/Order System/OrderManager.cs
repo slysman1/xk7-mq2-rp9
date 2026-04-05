@@ -6,7 +6,7 @@ using UnityEngine;
 public class OrderManager : MonoBehaviour
 {
     public static event Action OnOrderCompleted;
-
+    private Animator anim;
     private ItemManager itemManager => ItemManager.instance;
     public static OrderManager instance;
 
@@ -21,11 +21,8 @@ public class OrderManager : MonoBehaviour
     public List<OrderDataSO> remainingOrders { get; private set; } = new List<OrderDataSO>();
     private List<OrderDataSO> orderPool = new();
     [SerializeField] private List<OrderDataSO> allQuests = new();
-    private int completedQuestCount = 0;
-    private int ordersCompletedInPhase = 0;
-
-    [Header("Forced Order")]
-    [SerializeField] private List<ForcedOrderRule> forcedRules = new();
+    public int ordersDelivered { get; private set; } = 0;
+    private Dictionary<int, List<ItemDataSO>> pendingInjections = new(); 
 
     private void Awake()
     {
@@ -47,7 +44,6 @@ public class OrderManager : MonoBehaviour
 
     public void ResetQuestPool()
     {
-        ordersCompletedInPhase = 0;
         orderPool.Clear();
     }
 
@@ -65,59 +61,48 @@ public class OrderManager : MonoBehaviour
         TutorialManager.instance.SetTutorialOrder(null);
     }
 
-    public void StartNewOrderSet()
+    public void RequestNextOrder()
     {
-        int maxConcurrentOrders = itemManager.FindAllItems(orderTrackBoardData).Count;
-        this.maxConcurrentOrders = maxConcurrentOrders;
-
-        // 🔥 RESET PHASE
-
-        if (remainingOrders.Count >= this.maxConcurrentOrders)
+        if (remainingOrders.Count >= maxConcurrentOrders)
             return;
 
-        for (int i = 0; i < ordersPerCall; i++)
+        OrderDataSO order = GetNextOrder();
+
+        if (order == null)
         {
-            OrderDataSO order = GetNextOrder();
-
-            if (order == null)
-            {
-                Debug.LogWarning("⚠️ No orders available in pool.");
-                return;
-            }
-
-            remainingOrders.Add(order);
-            CreateOrder(order);
-
-            Debug.Log($"🧾 Loaded Quest Set {currentSetIndex} with {remainingOrders.Count} quests.");
+            Debug.LogWarning("⚠️ No orders available in pool.");
+            return;
         }
+
+        remainingOrders.Add(order);
     }
 
     private OrderDataSO GetNextOrder()
     {
-        // FORCED FIRST
-        OrderDataSO forcedOrder = GetForcedOrder();
-
-        if (forcedOrder != null)
-            return forcedOrder;
-        
-        // NORMAL FLOW
         RefillOrdersIfNeeded();
 
-        int randomIndex = UnityEngine.Random.Range(0, orderPool.Count);
-        OrderDataSO selectedQuest = orderPool[randomIndex];
-        orderPool.RemoveAt(randomIndex);
+        if (orderPool.Count == 0)
+            return null;
 
-        return selectedQuest;
+        OrderDataSO next = orderPool[0];
+        orderPool.RemoveAt(0);
+
+        pendingInjections.TryGetValue(ordersDelivered, out List<ItemDataSO> injected);
+
+        if (injected != null) 
+            pendingInjections.Remove(ordersDelivered);
+
+        ordersDelivered++;
+        CreateOrder(next, injected);  // ← CreateOrder moves here from RequestNextOrder
+
+        return next;
     }
 
     private void RefillOrdersIfNeeded()
     {
-        //if(UpgradeManager.)
-
         if (orderPool.Count == 0)
         {
             UpgradeType currentUpgradeType = UpgradeManager.instance.currentUpgrade.upgradeType;
-
             List<OrderDataSO> questsForUpgrade = allQuests.FindAll(q => q.neededUpgradeType == currentUpgradeType);
 
             if (questsForUpgrade == null || questsForUpgrade.Count == 0)
@@ -126,21 +111,16 @@ public class OrderManager : MonoBehaviour
                 return;
             }
 
-            orderPool = new List<OrderDataSO>(questsForUpgrade);
+            orderPool = questsForUpgrade.OrderBy(_ => UnityEngine.Random.value).ToList();
         }
     }
+
 
     public void NotifyOrderCompleted(OrderDataSO quest)
     {
         if (remainingOrders.Contains(quest))
             remainingOrders.Remove(quest);
 
-        completedQuestCount++;
-        ordersCompletedInPhase++;
-
-        // (your old logic preserved)
-        // if (completedQuestCount == 2)
-        //     UI.instance.NotifyPlayer("not_can_do_multiple_quests");
 
         CurrencyManager.instance.AddFavour(quest.favourPointReward);
         OnOrderCompleted?.Invoke();
@@ -148,38 +128,7 @@ public class OrderManager : MonoBehaviour
         Debug.Log($"✅ Completed “{quest.name}” ({remainingOrders.Count} left in set {currentSetIndex}).");
     }
 
-    private OrderDataSO GetForcedOrder()
-    {
-        UpgradeDataSO upgradeData = UpgradeManager.instance.GetCurrentUpgrade();
-
-        if (upgradeData == null)
-            return null;
-
-        for (int i = forcedRules.Count - 1; i >= 0; i--)
-        {
-            var rule = forcedRules[i];
-
-            if (rule.neededUpgradeType != upgradeData.upgradeType)
-                continue;
-
-            if (ordersCompletedInPhase >= rule.forceAfterCompleting)
-            {
-                if (rule.forcedOrder == null)
-                    continue;
-
-                OrderDataSO result = rule.forcedOrder;
-
-                // remove rule so it doesn't trigger again
-                forcedRules.RemoveAt(i);
-
-                return result;
-            }
-        }
-
-        return null;
-    }
-
-    private void CreateOrder(OrderDataSO order)
+    private void CreateOrder(OrderDataSO order, List<ItemDataSO> injectedItems = null)
     {
         List<ItemDataSO> questItems = new();
         List<GameObject> extraItems = new();
@@ -187,12 +136,30 @@ public class OrderManager : MonoBehaviour
         extraItems.Add(GetNewScroll(order));
 
         foreach (var input in order.orderInput)
-        {
             for (int i = 0; i < input.itemQuantity; i++)
                 questItems.Add(input.itemData);
-        }
+
+        if (injectedItems != null)
+            questItems.AddRange(injectedItems);
 
         DeliveryManager.instance.CreateDeliveryBox(questItems, extraItems);
+    }
+
+    public int OrdersNeededToReach(int targetCredits)
+    {
+        int accumulated = 0;
+        int count = 0;
+
+        foreach (OrderDataSO order in orderPool)
+        {
+            if (accumulated >= targetCredits)
+                break;
+
+            accumulated += order.totalCreditReward;
+            count++;
+        }
+
+        return count;
     }
 
     public void AddOrder(OrderDataSO questToAdd)
@@ -222,12 +189,11 @@ public class OrderManager : MonoBehaviour
 
         return newScroll.gameObject;
     }
-}
 
-[System.Serializable]
-public class ForcedOrderRule
-{
-    public UpgradeType neededUpgradeType;
-    public int forceAfterCompleting;
-    public OrderDataSO forcedOrder;
+    public void RegisterInjection(int poolIndex, List<ItemDataSO> items)
+    {
+        pendingInjections[poolIndex] = items;
+    }
+
+
 }

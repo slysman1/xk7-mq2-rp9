@@ -18,6 +18,9 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private OrderDataSO tutorialOrder;
 
 
+
+
+
     private void Awake()
     {
         instance = this;
@@ -55,15 +58,18 @@ public class TutorialManager : MonoBehaviour
         currentStep = tutorial.steps[stepIndex];
         stepIndex = stepIndex + 1;
 
+        currentStep.OnCompleted += OnTaskCompleted;
         CreateItems(currentStep.startingItems);
 
         yield return null;
         currentStep.StartTask();
     }
 
-    public void OnTaskCompleted(TutorialStep tutorialStep)
+    private void OnTaskCompleted(TutorialStep tutorialStep)
     {
         completedTutorialSteps.Add(tutorialStep);
+
+        tutorialStep.OnCompleted -= OnTaskCompleted;
 
         CreateItems(tutorialStep.taskReward);
         StartNextTutorialStep();

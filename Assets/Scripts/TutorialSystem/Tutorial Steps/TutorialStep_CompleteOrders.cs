@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Tutorial/Tutorial Step/Complete Orders", fileName = "Tutorial Step - Complete Orders")]
@@ -6,6 +7,9 @@ using UnityEngine;
 
 public class TutorialStep_CompleteOrders : TutorialStep
 {
+    [SerializeField] private UpgradeDataSO targetUpgrade;
+    [SerializeField] private List<ItemDataSO> itemsToInject;
+    [Space]
     [SerializeField] private int ordersToComplete = 1;
     private int completedOrders;
     [SerializeField] private float waitTillHelpIndicator = 15f;
@@ -14,14 +18,25 @@ public class TutorialStep_CompleteOrders : TutorialStep
     public override void StartTask()
     {
         base.StartTask();
-
         completedOrders = 0;
+
+        if (targetUpgrade != null)
+        {
+            int ordersNeeded = OrderManager.instance.OrdersNeededToReach(targetUpgrade.upgradeCost);
+            ordersToComplete = ordersNeeded;
+        }
+
+        if (itemsToInject?.Count > 0)
+        {
+            int injectIndex = ordersToComplete - 1;
+            OrderManager.instance.RegisterInjection(injectIndex, itemsToInject);
+        }
+
         OrderManager.OnOrderCompleted += HandleTask;
         Order_RequestButton.OnOrderRequested += TutorialIndicator.Clear;
 
         if (waitTillHelpIndicator > 0)
             helpCo = TutorialManager.instance.StartCoroutine(EnableHelpIndicatorIfNeededCo());
-
 
         UpdateCurrentGoalUI();
     }
@@ -59,5 +74,7 @@ public class TutorialStep_CompleteOrders : TutorialStep
         yield return new WaitForSeconds(waitTillHelpIndicator);
         TutorialIndicator.HighlightAllTargets<Order_RequestButton>();
     }
+
+
 
 }
